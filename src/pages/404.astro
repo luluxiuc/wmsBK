@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="页面未找到 - wms" description="抱歉，您访问的页面不存在">
+  <section class="min-h-[70vh] flex items-center justify-center bg-cosmos-900">
+    <div class="text-center px-4">
+      <div class="text-8xl mb-6">🚀</div>
+      <h1 class="text-6xl font-black text-star-100 mb-4">404</h1>
+      <h2 class="text-2xl font-bold text-star-200 mb-4">页面未找到</h2>
+      <p class="text-star-300 mb-8 max-w-md mx-auto">
+        抱歉，您访问的页面不存在或已被移除。
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/" class="btn-primary">
+          返回首页
+        </a>
+        <a href="/blog/" class="btn-ghost">
+          浏览博客
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
