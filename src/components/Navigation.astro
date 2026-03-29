@@ -1,11 +1,13 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 
+const baseUrl = import.meta.env.BASE_URL;
+
 const navItems = [
-  { href: '/', label: '首页' },
-  { href: '/blog/', label: '博客' },
-  { href: '/projects/', label: '作品' },
-  { href: '/resources/', label: '资源' },
+  { href: `${baseUrl}`, label: '首页' },
+  { href: `${baseUrl}blog/`, label: '博客' },
+  { href: `${baseUrl}projects/`, label: '作品' },
+  { href: `${baseUrl}resources/`, label: '资源' },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -16,7 +18,7 @@ const currentPath = Astro.url.pathname;
   <div class="bg-cosmos-700/90 backdrop-blur-md rounded-pill shadow-nav px-4 sm:px-6 py-3 border border-cosmos-600">
     <div class="flex items-center justify-between">
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 text-xl font-bold text-star-100 hover:text-sky-400 transition-colors">
+      <a href={`${baseUrl}`} class="flex items-center gap-2 text-xl font-bold text-star-100 hover:text-sky-400 transition-colors">
         <span class="w-8 h-8 bg-gradient-to-br from-sky-400 to-nebula-400 rounded-lg flex items-center justify-center text-cosmos-800 font-black text-sm">W</span>
         <span class="hidden sm:inline">wms</span>
       </a>
