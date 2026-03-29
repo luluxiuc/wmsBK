@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+// 生成所有文章的路径
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => {
+    return data.draft !== true;
+  });
+  
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// 获取相关文章（同分类）
+const allPosts = await getCollection('posts', ({ data }) => {
+  return data.draft !== true && data.category === post.data.category;
+});
+const relatedPosts = allPosts
+  .filter(p => p.slug !== post.slug)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+
+// 格式化日期
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('zh-CN', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+
+// 阅读时间估算
+const readingTime = Math.ceil(post.body.split(/\s+/).length / 300);
+---
+
+<BaseLayout title={`${post.data.title} - 博客 - wms`} description={post.data.description}>
+  <!-- Article Header -->
+  <section class="pt-24 pb-12 bg-gradient-to-br from-cosmos-700 to-cosmos-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Back Link -->
+      <a 
+        href="/blog" 
+        class="inline-flex items-center gap-2 text-star-300 hover:text-sky-400 transition-colors mb-8"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        返回博客列表
+      </a>
+
+      <!-- Category -->
+      <div class="mb-4">
+        <span class="inline-flex items-center px-4 py-1.5 bg-sky-400/15 text-sky-400 text-sm font-semibold rounded-pill border border-sky-400/30">
+          {post.data.category}
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-4xl sm:text-5xl font-black text-star-100 mb-6 leading-tight">
+        {post.data.title}
+      </h1>
+
+      <!-- Description -->
+      <p class="text-xl text-star-200 mb-8">
+        {post.data.description}
+      </p>
+
+      <!-- Meta Info -->
+      <div class="flex flex-wrap items-center gap-6 text-sm text-star-300">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <time datetime={post.data.pubDate.toISOString()}>
+            {formatDate(post.data.pubDate)}
+          </time>
+        </div>
+        
+        {post.data.updatedDate && (
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>更新于 {formatDate(post.data.updatedDate)}</span>
+          </div>
+        )}
+        
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{readingTime} 分钟阅读</span>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-2 mt-6">
+        {post.data.tags.map((tag) => (
+          <a 
+            href={`/blog?tag=${tag}`}
+            class="text-sm text-star-300 bg-cosmos-600/50 hover:bg-cosmos-600 px-3 py-1 rounded-full transition-colors"
+          >
+            #{tag}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Article Content -->
+  <article class="py-12 bg-cosmos-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="prose prose-invert prose-lg max-w-none prose-headings:text-star-100 prose-p:text-star-200 prose-a:text-sky-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-star-100 prose-code:text-sky-400 prose-code:bg-cosmos-700 prose-code:px-1 prose-code:rounded prose-pre:bg-cosmos-700 prose-pre:border prose-pre:border-cosmos-600 prose-blockquote:border-l-sky-400 prose-blockquote:text-star-300 prose-li:text-star-200">
+        <Content />
+      </div>
+
+      <!-- Article Footer -->
+      <div class="mt-12 pt-8 border-t border-cosmos-600">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <span class="text-star-300">分享文章：</span>
+            <button 
+              onclick="copyLink()"
+              class="flex items-center gap-2 px-4 py-2 bg-cosmos-700 hover:bg-cosmos-600 text-star-200 rounded-lg transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              复制链接
+            </button>
+          </div>
+          
+          <a 
+            href="/blog"
+            class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 transition-colors"
+          >
+            查看更多文章
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Giscus Comments -->
+  <section class="py-12 bg-cosmos-800 border-t border-cosmos-600">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-star-100 mb-8">评论留言</h2>
+      <script
+        src="https://giscus.app/client.js"
+        data-repo="luluxiuc/wmsBK"
+        data-repo-id="R_kgDON1ZEqg"
+        data-category="Announcements"
+        data-category-id="DIC_kwDON1ZEqs4CnLXJ"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="dark"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async
+      ></script>
+    </div>
+  </section>
+
+  <!-- Related Posts -->
+  {relatedPosts.length > 0 && (
+    <section class="py-16 bg-cosmos-900">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-star-100 mb-8">相关文章</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {relatedPosts.map((relatedPost) => (
+            <a 
+              href={`/blog/${relatedPost.slug}/`}
+              class="group bg-cosmos-700 rounded-2xl p-6 border border-cosmos-600 hover:border-sky-400 transition-all duration-300"
+            >
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-2xl">
+                  {relatedPost.data.category === '技术' && '💻'}
+                  {relatedPost.data.category === '随笔' && '✍️'}
+                  {relatedPost.data.category === '思考' && '🤔'}
+                  {!['技术', '随笔', '思考'].includes(relatedPost.data.category) && '📝'}
+                </span>
+                <span class="text-xs text-star-300">
+                  {relatedPost.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </span>
+              </div>
+              <h3 class="font-bold text-star-100 group-hover:text-sky-400 transition-colors line-clamp-2">
+                {relatedPost.data.title}
+              </h3>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<script>
+  // 复制链接功能
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert('链接已复制到剪贴板');
+    }).catch(() => {
+      alert('复制失败，请手动复制');
+    });
+  }
+</script>

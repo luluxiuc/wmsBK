@@ -1,0 +1,177 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+const sortedProjects = projects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// 获取所有唯一的标签
+const allTags = [...new Set(projects.flatMap(p => p.data.tags))];
+---
+
+<BaseLayout title="作品展示 - wms" description="查看 wms 的项目作品集">
+  <!-- Hero Section -->
+  <section class="pt-20 pb-16 bg-gradient-to-br from-cosmos-700 to-cosmos-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl sm:text-6xl font-black text-star-100 mb-6">
+        作品展示
+      </h1>
+      <p class="text-xl text-star-200 max-w-2xl mx-auto">
+        一些我让它成为现实的想法
+      </p>
+    </div>
+  </section>
+
+  <!-- Filter Section -->
+  <section class="py-8 bg-cosmos-800 border-b border-cosmos-600 sticky top-20 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-center gap-3" id="filter-container">
+        <button 
+          class="filter-btn active px-6 py-2.5 rounded-pill text-sm font-semibold bg-sky-400 text-cosmos-800 transition-all duration-150 hover:scale-105 shadow-glow"
+          data-filter="all"
+        >
+          全部
+        </button>
+        {allTags.map((tag) => (
+          <button 
+            class="filter-btn px-6 py-2.5 rounded-pill text-sm font-medium bg-cosmos-700 text-star-200 hover:bg-cosmos-600 transition-all duration-150 border border-cosmos-600"
+            data-filter={tag}
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Grid -->
+  <section class="py-16 bg-cosmos-900 min-h-[60vh]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+        {sortedProjects.map((project) => (
+          <article 
+            class="project-card group rounded-2xl overflow-hidden transition-all duration-300"
+            data-tags={project.data.tags.join(',')}
+          >
+            <!-- Cover Image -->
+            <div class="relative h-56 overflow-hidden bg-gradient-to-br from-cosmos-600 to-cosmos-800">
+              <div class="absolute inset-0 flex items-center justify-center text-star-100 text-6xl">
+                🚀
+              </div>
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+              
+              <!-- Date badge -->
+              <div class="absolute top-4 left-4">
+                <span class="px-3 py-1 bg-cosmos-700/90 backdrop-blur-sm text-sky-400 text-xs font-semibold rounded-pill border border-cosmos-500">
+                  {project.data.date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short' })}
+                </span>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 space-y-4">
+              <!-- Tags -->
+              <div class="flex flex-wrap gap-2">
+                {project.data.tags.slice(0, 3).map((tag) => (
+                  <span class="tag text-xs">{tag}</span>
+                ))}
+              </div>
+
+              <!-- Title -->
+              <h2 class="text-xl font-bold text-star-100 group-hover:text-sky-400 transition-colors">
+                {project.data.title}
+              </h2>
+
+              <!-- Description -->
+              <p class="text-star-200 line-clamp-2 text-sm">
+                {project.data.description}
+              </p>
+
+              <!-- Links -->
+              <div class="flex items-center gap-4 pt-4 border-t border-cosmos-600">
+                {project.data.demo_url && (
+                  <a 
+                    href={project.data.demo_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-1.5 text-sm font-semibold text-sky-400 hover:text-sky-300 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    在线演示
+                  </a>
+                )}
+                {project.data.github_url && (
+                  <a 
+                    href={project.data.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-1.5 text-sm font-medium text-star-300 hover:text-sky-400 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                    </svg>
+                    源代码
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden text-center py-20">
+        <div class="w-20 h-20 bg-gray-100 dark:bg-forest rounded-full flex items-center justify-center mx-auto mb-6">
+          <span class="text-4xl">🔍</span>
+        </div>
+        <h3 class="text-xl font-bold text-forest dark:text-white mb-2">没有找到相关项目</h3>
+        <p class="text-gray-500 dark:text-gray-400">尝试选择其他标签筛选</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // 筛选功能
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const projectCards = document.querySelectorAll('.project-card');
+  const emptyState = document.getElementById('empty-state');
+  const projectsGrid = document.getElementById('projects-grid');
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-filter');
+
+      // 更新按钮样式
+      filterBtns.forEach((b) => {
+        b.classList.remove('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
+        b.classList.add('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
+      });
+      btn.classList.remove('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
+      btn.classList.add('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
+
+      // 筛选项目
+      let visibleCount = 0;
+      projectCards.forEach((card) => {
+        const tags = card.getAttribute('data-tags') || '';
+        if (filter === 'all' || tags.includes(filter)) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      // 显示/隐藏空状态
+      if (visibleCount === 0) {
+        emptyState?.classList.remove('hidden');
+        projectsGrid?.classList.add('hidden');
+      } else {
+        emptyState?.classList.add('hidden');
+        projectsGrid?.classList.remove('hidden');
+      }
+    });
+  });
+</script>

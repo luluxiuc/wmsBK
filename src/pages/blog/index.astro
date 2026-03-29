@@ -1,0 +1,279 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts', ({ data }) => {
+  return data.draft !== true;
+});
+
+const sortedPosts = allPosts.sort((a, b) => 
+  b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+
+// 获取所有分类和标签
+const allCategories = [...new Set(sortedPosts.map(post => post.data.category))];
+const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags))];
+
+// 统计数据
+const totalPosts = sortedPosts.length;
+---
+
+<BaseLayout title="博客 - wms" description="wms 的个人博客，记录技术探索与思考">
+  <!-- Hero Section -->
+  <section class="pt-20 pb-16 bg-gradient-to-br from-cosmos-700 to-cosmos-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl sm:text-6xl font-black text-star-100 mb-6">
+        博客
+      </h1>
+      <p class="text-xl text-star-200 max-w-2xl mx-auto">
+        记录技术探索、学习心得与思考碎片
+      </p>
+      <div class="flex justify-center gap-8 mt-8">
+        <div class="text-center">
+          <div class="text-3xl font-black text-sky-400">{totalPosts}</div>
+          <div class="text-sm text-star-300">文章</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-black text-sky-400">{allCategories.length}</div>
+          <div class="text-sm text-star-300">分类</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-black text-sky-400">{allTags.length}</div>
+          <div class="text-sm text-star-300">标签</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter & Search Section -->
+  <section class="py-8 bg-cosmos-800 border-b border-cosmos-600 sticky top-20 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Search Bar -->
+      <div class="max-w-2xl mx-auto mb-6">
+        <div class="relative">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="搜索文章..."
+            class="w-full px-6 py-4 bg-cosmos-700 border-2 border-cosmos-600 rounded-pill text-star-100 placeholder-star-300 focus:outline-none focus:border-sky-400 transition-colors"
+          />
+          <div class="absolute right-5 top-1/2 -translate-y-1/2 text-star-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="flex flex-wrap items-center justify-center gap-3 mb-4">
+        <button 
+          class="filter-btn active px-5 py-2 rounded-pill text-sm font-semibold bg-sky-400 text-cosmos-800 transition-all duration-150 hover:scale-105 shadow-glow"
+          data-filter="all"
+        >
+          全部
+        </button>
+        {allCategories.map((category) => (
+          <button 
+            class="filter-btn px-5 py-2 rounded-pill text-sm font-medium bg-cosmos-700 text-star-200 hover:bg-cosmos-600 transition-all duration-150 border border-cosmos-600"
+            data-filter={category}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        {allTags.map((tag) => (
+          <button 
+            class="tag-btn px-3 py-1 rounded-pill text-xs font-medium bg-cosmos-700/50 text-star-300 hover:bg-cosmos-600 hover:text-sky-400 transition-all duration-150 border border-cosmos-600/50"
+            data-tag={tag}
+          >
+            #{tag}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Posts Grid -->
+  <section class="py-16 bg-cosmos-900 min-h-[60vh]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="posts-grid">
+        {sortedPosts.map((post) => (
+          <article 
+            class="post-card group bg-cosmos-700 rounded-2xl overflow-hidden border border-cosmos-600 hover:border-sky-400 transition-all duration-300"
+            data-category={post.data.category}
+            data-tags={post.data.tags.join(',')}
+            data-title={post.data.title.toLowerCase()}
+            data-description={post.data.description.toLowerCase()}
+          >
+            <a href={`/blog/${post.slug}/`} class="block">
+              <!-- Cover or Emoji -->
+              <div class="relative h-48 overflow-hidden bg-gradient-to-br from-cosmos-600 to-cosmos-800">
+                <div class="absolute inset-0 flex items-center justify-center text-5xl">
+                  {post.data.category === '技术' && '💻'}
+                  {post.data.category === '随笔' && '✍️'}
+                  {post.data.category === '思考' && '🤔'}
+                  {!['技术', '随笔', '思考'].includes(post.data.category) && '📝'}
+                </div>
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+              </div>
+
+              <!-- Content -->
+              <div class="p-6 space-y-4">
+                <!-- Category & Date -->
+                <div class="flex items-center justify-between">
+                  <span class="inline-flex items-center px-3 py-1 bg-cosmos-600 text-sky-400 text-xs font-semibold rounded-pill border border-cosmos-500">
+                    {post.data.category}
+                  </span>
+                  <span class="text-xs text-star-300">
+                    {post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+
+                <!-- Title -->
+                <h2 class="text-xl font-bold text-star-100 group-hover:text-sky-400 transition-colors line-clamp-2">
+                  {post.data.title}
+                </h2>
+
+                <!-- Description -->
+                <p class="text-sm text-star-200 line-clamp-2">
+                  {post.data.description}
+                </p>
+
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-2 pt-2">
+                  {post.data.tags.slice(0, 3).map((tag) => (
+                    <span class="text-xs text-star-300 bg-cosmos-600/50 px-2 py-1 rounded">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+
+                <!-- Read More -->
+                <div class="flex items-center justify-between pt-4 border-t border-cosmos-600">
+                  <span class="text-sm font-semibold text-sky-400 group-hover:text-sky-300 transition-colors flex items-center gap-1">
+                    阅读全文
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden text-center py-20">
+        <div class="w-20 h-20 bg-cosmos-700 rounded-full flex items-center justify-center mx-auto mb-6">
+          <span class="text-4xl">🔍</span>
+        </div>
+        <h3 class="text-xl font-bold text-star-100 mb-2">没有找到相关文章</h3>
+        <p class="text-star-300">尝试使用其他关键词搜索或选择其他分类</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // 搜索和筛选功能
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const postCards = document.querySelectorAll('.post-card');
+  const emptyState = document.getElementById('empty-state');
+  const postsGrid = document.getElementById('posts-grid');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const tagBtns = document.querySelectorAll('.tag-btn');
+
+  let currentCategory = 'all';
+  let currentSearch = '';
+  let currentTag = '';
+
+  function filterPosts() {
+    let visibleCount = 0;
+
+    postCards.forEach((card) => {
+      const category = card.getAttribute('data-category') || '';
+      const tags = card.getAttribute('data-tags') || '';
+      const title = card.getAttribute('data-title') || '';
+      const description = card.getAttribute('data-description') || '';
+
+      const matchesCategory = currentCategory === 'all' || category === currentCategory;
+      const matchesTag = currentTag === '' || tags.includes(currentTag);
+      const matchesSearch = currentSearch === '' || 
+        title.includes(currentSearch.toLowerCase()) || 
+        description.includes(currentSearch.toLowerCase());
+
+      if (matchesCategory && matchesTag && matchesSearch) {
+        card.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    // 显示/隐藏空状态
+    if (visibleCount === 0) {
+      emptyState?.classList.remove('hidden');
+      postsGrid?.classList.add('hidden');
+    } else {
+      emptyState?.classList.add('hidden');
+      postsGrid?.classList.remove('hidden');
+    }
+  }
+
+  // 搜索输入监听
+  searchInput?.addEventListener('input', (e) => {
+    currentSearch = (e.target as HTMLInputElement).value;
+    filterPosts();
+  });
+
+  // 分类按钮监听
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-filter') || 'all';
+      currentCategory = filter;
+      currentTag = ''; // 清除标签筛选
+
+      // 更新按钮样式
+      filterBtns.forEach((b) => {
+        b.classList.remove('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
+        b.classList.add('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
+      });
+      btn.classList.remove('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
+      btn.classList.add('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
+
+      // 清除标签按钮样式
+      tagBtns.forEach((b) => {
+        b.classList.remove('bg-sky-400/20', 'text-sky-400', 'border-sky-400/50');
+      });
+
+      filterPosts();
+    });
+  });
+
+  // 标签按钮监听
+  tagBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tag = btn.getAttribute('data-tag') || '';
+      
+      if (currentTag === tag) {
+        // 取消选择
+        currentTag = '';
+        btn.classList.remove('bg-sky-400/20', 'text-sky-400', 'border-sky-400/50');
+      } else {
+        // 选择新标签
+        currentTag = tag;
+        tagBtns.forEach((b) => {
+          b.classList.remove('bg-sky-400/20', 'text-sky-400', 'border-sky-400/50');
+        });
+        btn.classList.add('bg-sky-400/20', 'text-sky-400', 'border-sky-400/50');
+      }
+
+      filterPosts();
+    });
+  });
+</script>

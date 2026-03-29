@@ -1,0 +1,362 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// 获取内容数据
+const aboutEntries = await getCollection('about');
+const about = aboutEntries[0]?.data;
+
+const allProjects = await getCollection('projects');
+const recentProjects = allProjects
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const allResources = await getCollection('resources');
+const topResources = allResources
+  .sort((a, b) => (b.data.rating || 0) - (a.data.rating || 0))
+  .slice(0, 4);
+---
+
+<BaseLayout title="wms - 个人作品集" description="wms 的个人作品集网站，展示项目作品和资源分享">
+  <!-- Hero Section -->
+  <section class="relative min-h-[90vh] flex items-center overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 -z-10">
+      <div class="absolute top-20 right-10 w-72 h-72 bg-sky-400/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 left-10 w-96 h-96 bg-nebula-400/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <!-- Left: Content -->
+        <div class="space-y-8">
+          <div class="inline-flex items-center gap-2 px-4 py-2 bg-sky-400/15 rounded-pill border border-sky-400/30">
+            <span class="w-2 h-2 bg-sky-400 rounded-full animate-pulse shadow-glow"></span>
+            <span class="text-sm font-medium text-sky-400">{about?.title || '高中生 / 编程爱好者 / 正在成为AI应用者'}</span>
+          </div>
+
+          <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-star-100 leading-[1.1]">
+            创造数字<br/>
+            <span class="text-gradient">体验</span>的艺术
+          </h1>
+
+          <p class="text-lg sm:text-xl text-star-200 max-w-lg leading-relaxed">
+            {about?.bio || '热爱技术与设计的创作者，专注于构建优雅且实用的数字产品。'}
+          </p>
+
+          <div class="flex flex-wrap gap-4">
+            <a href="/projects" class="btn-primary">
+              查看作品
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </a>
+            <a href="/resources" class="btn-ghost">
+              探索资源
+            </a>
+          </div>
+
+          <!-- Stats -->
+          <div class="flex gap-8 pt-4">
+            <div>
+              <div class="text-3xl font-black text-star-100">{allProjects.length}+</div>
+              <div class="text-sm text-star-300">项目作品</div>
+            </div>
+            <div>
+              <div class="text-3xl font-black text-star-100">{allResources.length}+</div>
+              <div class="text-sm text-star-300">资源分享</div>
+            </div>
+            <div>
+              <div class="text-3xl font-black text-star-100">3+</div>
+              <div class="text-sm text-star-300">年经验</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Visual -->
+        <div class="relative hidden lg:block">
+          <div class="relative w-full aspect-square max-w-lg mx-auto">
+            <!-- Main card -->
+            <div class="absolute inset-0 bg-gradient-to-br from-sky-400 to-nebula-400 rounded-3xl rotate-3 shadow-2xl shadow-glow"></div>
+            <div class="absolute inset-0 bg-cosmos-700 rounded-3xl shadow-xl flex flex-col justify-center items-center p-8 border border-cosmos-600">
+              <img
+                src="/images/logo.png"
+                alt="wms logo"
+                class="w-32 h-32 rounded-2xl object-cover mb-6 shadow-glow"
+              />
+              <h3 class="text-2xl font-bold text-star-100 mb-2">wms</h3>
+              <p class="text-star-300 text-center">思考者，写代码，也写自己</p>
+              
+              <!-- Tech badges -->
+              <div class="flex flex-wrap justify-center gap-2 mt-6">
+                {['Astro', 'React', 'TypeScript'].map((tech) => (
+                  <span class="px-3 py-1 bg-cosmos-600 text-sky-400 text-xs font-medium rounded-pill border border-cosmos-500">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <!-- Floating elements -->
+            <div class="absolute -top-4 -right-4 bg-cosmos-700 rounded-2xl shadow-lg p-4 animate-bounce border border-cosmos-600" style="animation-duration: 3s;">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🚀</span>
+                <span class="text-sm font-semibold text-sky-400">Launch</span>
+              </div>
+            </div>
+
+            <div class="absolute -bottom-4 -left-4 bg-cosmos-700 rounded-2xl shadow-lg p-4 border border-cosmos-600" style="animation: bounce 3s infinite 0.5s;">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">✨</span>
+                <span class="text-sm font-semibold text-sky-400">Design</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Projects Section -->
+  <section class="py-24 bg-cosmos-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
+        <div>
+          <h2 class="text-4xl font-black text-star-100 mb-4">最新作品</h2>
+          <p class="text-star-200 max-w-xl">探索我最近完成的项目，每一个都倾注了对细节的追求。</p>
+        </div>
+        <a href="/projects" class="btn-secondary self-start sm:self-auto">
+          查看全部
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {recentProjects.map((project) => (
+          <article class="project-card group">
+            <!-- Cover -->
+            <div class="relative h-48 -mx-6 -mt-6 mb-6 rounded-t-2xl overflow-hidden bg-gradient-to-br from-cosmos-600 to-cosmos-800">
+              <div class="absolute inset-0 flex items-center justify-center text-star-100 text-5xl">
+                🚀
+              </div>
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="space-y-4">
+              <div class="flex flex-wrap gap-2">
+                {project.data.tags.slice(0, 2).map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+
+              <h3 class="text-xl font-bold text-star-100 group-hover:text-sky-400 transition-colors">
+                {project.data.title}
+              </h3>
+
+              <p class="text-star-200 line-clamp-2">
+                {project.data.description}
+              </p>
+
+              <div class="flex gap-3 pt-2">
+                {project.data.demo_url && (
+                  <a 
+                    href={project.data.demo_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm font-medium text-sky-400 hover:text-sky-300 transition-colors"
+                  >
+                    在线演示 →
+                  </a>
+                )}
+                {project.data.github_url && (
+                  <a 
+                    href={project.data.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm font-medium text-star-300 hover:text-sky-400 transition-colors"
+                  >
+                    源代码 →
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources Section -->
+  <section class="py-24 bg-cosmos-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
+        <div>
+          <h2 class="text-4xl font-black text-star-100 mb-4">热门资源</h2>
+          <p class="text-star-200 max-w-xl">精选的开发工具、教程和资源，助你提升效率。</p>
+        </div>
+        <a href="/resources" class="btn-ghost self-start sm:self-auto">
+          浏览全部
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {topResources.map((resource) => (
+          <a 
+            href={resource.data.download_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="bento-card group hover:shadow-card-hover transition-all duration-300"
+          >
+            <div class="w-14 h-14 bg-sky-400/15 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform border border-sky-400/30">
+              {resource.data.category === '工具' && '🔧'}
+              {resource.data.category === '书籍' && '📚'}
+              {resource.data.category === '代码' && '💻'}
+              {resource.data.category === '教程' && '📖'}
+              {resource.data.category === '其他' && '📦'}
+            </div>
+
+            <h3 class="text-lg font-bold text-star-100 mb-2 group-hover:text-sky-400 transition-colors">
+              {resource.data.resource_name}
+            </h3>
+
+            <p class="text-sm text-star-200 line-clamp-2 mb-4">
+              {resource.data.description}
+            </p>
+
+            <div class="flex items-center justify-between">
+              <span class="tag text-xs">{resource.data.category}</span>
+              {resource.data.rating && (
+                <span class="text-yellow-500 text-sm">{'★'.repeat(resource.data.rating)}</span>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24 bg-gradient-to-br from-cosmos-700 to-cosmos-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-4xl sm:text-5xl font-black text-star-100 mb-6">
+        有想法？
+      </h2>
+      <p class="text-xl text-star-200 mb-10 max-w-2xl mx-auto">
+        我不太相信"标准人生"。<br/>
+        <br/>
+        但我相信：认真思考过的人，必须自己选择怎么活。<br/>
+        <br/>
+        这个网站不是简历，是一个人在17岁时留下的思维地图。<br/>
+        里面有代码，有文字，有对AI的尝试，也有对"人该怎么学习、怎么存在"的追问。<br/>
+        <br/>
+        如果你读到某句话觉得"这人也这样想过"——<br/>
+        欢迎留下痕迹。
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button id="contact-btn" class="btn-primary cursor-pointer">
+          联系我
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </button>
+        <a href="https://github.com/luluxiuc" target="_blank" rel="noopener noreferrer" class="px-8 py-4 bg-cosmos-600 text-star-100 font-semibold rounded-pill hover:bg-cosmos-500 transition-all duration-150 border border-cosmos-500">
+          GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- QQ Contact Modal -->
+  <div id="qq-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-cosmos-700 rounded-3xl p-8 max-w-sm mx-4 text-center shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-cosmos-600" id="qq-modal-content">
+      <div class="w-16 h-16 bg-gradient-to-br from-sky-400 to-nebula-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-glow">
+        💬
+      </div>
+      <h3 class="text-2xl font-bold text-star-100 mb-2">联系我</h3>
+      <p class="text-star-200 mb-6">QQ：2121815491</p>
+      <div class="flex gap-3">
+        <button id="copy-qq-btn" class="flex-1 btn-primary py-3 text-sm">
+          复制号码
+        </button>
+        <button id="close-modal-btn" class="flex-1 btn-ghost py-3 text-sm">
+          关闭
+        </button>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  // QQ Modal functionality
+  const contactBtn = document.getElementById('contact-btn');
+  const qqModal = document.getElementById('qq-modal');
+  const qqModalContent = document.getElementById('qq-modal-content');
+  const closeModalBtn = document.getElementById('close-modal-btn');
+  const copyQqBtn = document.getElementById('copy-qq-btn');
+  const qqNumber = '2121815491';
+
+  // Open modal
+  contactBtn?.addEventListener('click', () => {
+    qqModal?.classList.remove('hidden');
+    qqModal?.classList.add('flex');
+    setTimeout(() => {
+      qqModalContent?.classList.remove('scale-95', 'opacity-0');
+      qqModalContent?.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  });
+
+  // Close modal
+  const closeModal = () => {
+    qqModalContent?.classList.remove('scale-100', 'opacity-100');
+    qqModalContent?.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+      qqModal?.classList.add('hidden');
+      qqModal?.classList.remove('flex');
+    }, 300);
+  };
+
+  closeModalBtn?.addEventListener('click', closeModal);
+
+  // Close on backdrop click
+  qqModal?.addEventListener('click', (e) => {
+    if (e.target === qqModal) {
+      closeModal();
+    }
+  });
+
+  // Copy QQ number
+  copyQqBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(qqNumber);
+      copyQqBtn.textContent = '已复制';
+      setTimeout(() => {
+        copyQqBtn.textContent = '复制号码';
+      }, 2000);
+    } catch (err) {
+      console.error('复制失败:', err);
+      // Fallback
+      const textArea = document.createElement('textarea');
+      textArea.value = qqNumber;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        copyQqBtn.textContent = '已复制';
+        setTimeout(() => {
+          copyQqBtn.textContent = '复制号码';
+        }, 2000);
+      } catch (err) {
+        console.error('复制失败:', err);
+      }
+      document.body.removeChild(textArea);
+    }
+  });
+</script>

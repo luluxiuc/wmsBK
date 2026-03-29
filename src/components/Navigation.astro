@@ -1,0 +1,94 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+
+const navItems = [
+  { href: '/', label: '首页' },
+  { href: '/blog', label: '博客' },
+  { href: '/projects', label: '作品' },
+  { href: '/resources', label: '资源' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<!-- 悬浮导航栏 -->
+<nav class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl">
+  <div class="bg-cosmos-700/90 backdrop-blur-md rounded-pill shadow-nav px-4 sm:px-6 py-3 border border-cosmos-600">
+    <div class="flex items-center justify-between">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 text-xl font-bold text-star-100 hover:text-sky-400 transition-colors">
+        <span class="w-8 h-8 bg-gradient-to-br from-sky-400 to-nebula-400 rounded-lg flex items-center justify-center text-cosmos-800 font-black text-sm">W</span>
+        <span class="hidden sm:inline">wms</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-2 bg-cosmos-800/80 rounded-pill p-1">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class={`px-5 py-2 rounded-pill text-sm font-medium transition-all duration-150 ${
+              currentPath === item.href 
+                ? 'bg-gradient-to-r from-sky-400 to-sky-500 text-cosmos-800 shadow-glow' 
+                : 'text-star-300 hover:bg-cosmos-600 hover:text-sky-400'
+            }`}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <!-- Right Side -->
+      <div class="flex items-center gap-2">
+        <ThemeToggle />
+        
+        <!-- Mobile Menu Button -->
+        <button
+          id="mobile-menu-button"
+          class="md:hidden p-2 rounded-xl text-star-300 hover:bg-cosmos-600 hover:text-sky-400 transition-colors"
+          aria-label="打开菜单"
+        >
+          <svg id="menu-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="close-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden mt-3 pt-3 border-t border-cosmos-600">
+      <div class="flex flex-col gap-1">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class={`px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              currentPath === item.href 
+                ? 'bg-gradient-to-r from-sky-400 to-sky-500 text-cosmos-800' 
+                : 'text-star-300 hover:bg-cosmos-600 hover:text-sky-400'
+            }`}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- 占位元素，防止内容被导航栏遮挡 -->
+<div class="h-20"></div>
+
+<script>
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = document.getElementById('menu-icon');
+  const closeIcon = document.getElementById('close-icon');
+
+  mobileMenuButton?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+    menuIcon?.classList.toggle('hidden');
+    closeIcon?.classList.toggle('hidden');
+  });
+</script>

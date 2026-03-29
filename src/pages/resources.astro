@@ -1,0 +1,206 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const resources = await getCollection('resources');
+
+// 获取所有唯一的分类
+const allCategories = [...new Set(resources.map(r => r.data.category))];
+
+// 分类图标映射
+const categoryIcons: Record<string, string> = {
+  '工具': '🔧',
+  '书籍': '📚',
+  '代码': '💻',
+  '教程': '📖',
+  '其他': '📦',
+};
+---
+
+<BaseLayout title="资源分享 - wms" description="发现 wms 精选的开发工具、教程和资源">
+  <!-- Hero Section -->
+  <section class="pt-20 pb-16 bg-gradient-to-br from-sky-400 to-nebula-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl sm:text-6xl font-black text-cosmos-800 mb-6">
+        资源分享
+      </h1>
+      <p class="text-xl text-cosmos-700 max-w-2xl mx-auto">
+        精选的开发工具、教程、书籍和其他有用资源
+      </p>
+    </div>
+  </section>
+
+  <!-- Search & Filter Section -->
+  <section class="py-8 bg-cosmos-800 border-b border-cosmos-600 sticky top-20 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Search Bar -->
+      <div class="max-w-2xl mx-auto mb-6">
+        <div class="relative">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="搜索资源..."
+            class="w-full px-6 py-4 bg-cosmos-700 border-2 border-cosmos-600 rounded-pill text-star-100 placeholder-star-300 focus:outline-none focus:border-sky-400 transition-colors"
+          />
+          <div class="absolute right-5 top-1/2 -translate-y-1/2 text-star-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <button 
+          class="category-btn active px-6 py-2.5 rounded-pill text-sm font-semibold bg-sky-400 text-cosmos-800 transition-all duration-150 hover:scale-105 shadow-glow"
+          data-category="all"
+        >
+          全部
+        </button>
+        {allCategories.map((category) => (
+          <button 
+            class="category-btn px-6 py-2.5 rounded-pill text-sm font-medium bg-cosmos-700 text-star-200 hover:bg-cosmos-600 transition-all duration-150 border border-cosmos-600"
+            data-category={category}
+          >
+            {categoryIcons[category] || '📦'} {category}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources Grid -->
+  <section class="py-16 bg-cosmos-900 min-h-[60vh]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="resources-grid">
+        {resources.map((resource) => (
+          <a 
+            href={resource.data.download_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="resource-item group bg-cosmos-700 rounded-2xl p-6 border border-cosmos-600 hover:border-sky-400 transition-all duration-300"
+            data-category={resource.data.category}
+            data-name={resource.data.resource_name.toLowerCase()}
+            data-description={resource.data.description.toLowerCase()}
+          >
+            <!-- Icon -->
+            <div class="w-16 h-16 bg-sky-400/15 rounded-2xl flex items-center justify-center text-4xl mb-5 group-hover:scale-110 transition-all duration-300 border border-sky-400/30">
+              {categoryIcons[resource.data.category] || '📦'}
+            </div>
+
+            <!-- Category Badge -->
+            <div class="mb-3">
+              <span class="inline-flex items-center px-3 py-1 bg-cosmos-600 text-sky-400 text-xs font-semibold rounded-pill border border-cosmos-500">
+                {resource.data.category}
+              </span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-lg font-bold text-star-100 mb-2 group-hover:text-sky-400 transition-colors line-clamp-1">
+              {resource.data.resource_name}
+            </h3>
+
+            <!-- Description -->
+            <p class="text-sm text-star-200 line-clamp-2 mb-4">
+              {resource.data.description}
+            </p>
+
+            <!-- Rating & Action -->
+            <div class="flex items-center justify-between pt-4 border-t border-cosmos-600">
+              {resource.data.rating ? (
+                <span class="text-yellow-500 text-sm">
+                  {'★'.repeat(resource.data.rating)}
+                </span>
+              ) : (
+                <span></span>
+              )}
+              <span class="text-sm font-semibold text-sky-400 group-hover:text-sky-300 transition-colors flex items-center gap-1">
+                访问
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden text-center py-20">
+        <div class="w-20 h-20 bg-cosmos-700 rounded-full flex items-center justify-center mx-auto mb-6">
+          <span class="text-4xl">🔍</span>
+        </div>
+        <h3 class="text-xl font-bold text-star-100 mb-2">没有找到相关资源</h3>
+        <p class="text-star-300">尝试使用其他关键词搜索或选择其他分类</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // 搜索和筛选功能
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const resourceItems = document.querySelectorAll('.resource-item');
+  const emptyState = document.getElementById('empty-state');
+  const resourcesGrid = document.getElementById('resources-grid');
+  const categoryBtns = document.querySelectorAll('.category-btn');
+
+  let currentCategory = 'all';
+  let currentSearch = '';
+
+  function filterResources() {
+    let visibleCount = 0;
+
+    resourceItems.forEach((item) => {
+      const category = item.getAttribute('data-category') || '';
+      const name = item.getAttribute('data-name') || '';
+      const description = item.getAttribute('data-description') || '';
+
+      const matchesCategory = currentCategory === 'all' || category === currentCategory;
+      const matchesSearch = currentSearch === '' || 
+        name.includes(currentSearch.toLowerCase()) || 
+        description.includes(currentSearch.toLowerCase());
+
+      if (matchesCategory && matchesSearch) {
+        item.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+
+    // 显示/隐藏空状态
+    if (visibleCount === 0) {
+      emptyState?.classList.remove('hidden');
+      resourcesGrid?.classList.add('hidden');
+    } else {
+      emptyState?.classList.add('hidden');
+      resourcesGrid?.classList.remove('hidden');
+    }
+  }
+
+  // 搜索输入监听
+  searchInput?.addEventListener('input', (e) => {
+    currentSearch = (e.target as HTMLInputElement).value;
+    filterResources();
+  });
+
+  // 分类按钮监听
+  categoryBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const category = btn.getAttribute('data-category') || 'all';
+      currentCategory = category;
+
+      // 更新按钮样式
+      categoryBtns.forEach((b) => {
+        b.classList.remove('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
+        b.classList.add('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
+      });
+      btn.classList.remove('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
+      btn.classList.add('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
+
+      filterResources();
+    });
+  });
+</script>
