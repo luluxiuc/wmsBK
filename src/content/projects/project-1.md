@@ -1,6 +1,6 @@
 ---
 title: "个人作品集网站"
-date: 2024-03-15
+date: 2026-03-01
 cover_image: "/assets/project-portfolio.jpg"
 tags: ["Astro", "Tailwind CSS", "GitHub Actions", "响应式设计"]
 demo_url: "https://wmsBK.github.io"
