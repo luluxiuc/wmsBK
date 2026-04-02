@@ -89,9 +89,9 @@ const allTags = [...new Set(projects.flatMap(p => p.data.tags))];
 
               <!-- Links -->
               <div class="flex items-center gap-4 pt-4 border-t border-cosmos-600">
-                {project.data.demo_url && (
+                {(project.data.demo_url || project.data.demo_hint) && (
                   <a 
-                    href={project.data.demo_url}
+                    href={project.data.demo_url || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="flex items-center gap-1.5 text-sm font-semibold text-sky-400 hover:text-sky-300 transition-colors demo-link"
