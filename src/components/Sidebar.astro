@@ -105,6 +105,59 @@
 <!-- 移动端遮罩 -->
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
+<!-- 移动端底部导航栏 -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="移动端导航">
+  <a href="#intro" class="mobile-nav-item active" data-section="intro">
+    <span class="mobile-nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </span>
+    <span class="mobile-nav-label">首页</span>
+  </a>
+  
+  <a href="#chat" class="mobile-nav-item" data-section="chat">
+    <span class="mobile-nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+    </span>
+    <span class="mobile-nav-label">AI对话</span>
+  </a>
+  
+  <a href="#more" class="mobile-nav-item" data-section="more">
+    <span class="mobile-nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="1"/>
+        <circle cx="19" cy="12" r="1"/>
+        <circle cx="5" cy="12" r="1"/>
+      </svg>
+    </span>
+    <span class="mobile-nav-label">更多</span>
+  </a>
+  
+  <a href="/blog/" class="mobile-nav-item" data-section="blog">
+    <span class="mobile-nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+    </span>
+    <span class="mobile-nav-label">博客</span>
+  </a>
+  
+  <a href="/projects/" class="mobile-nav-item" data-section="projects">
+    <span class="mobile-nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+        <polyline points="2 17 12 22 22 17"/>
+      </svg>
+    </span>
+    <span class="mobile-nav-label">作品</span>
+  </a>
+</nav>
+
 <style>
   .sidebar {
     position: fixed;
@@ -308,6 +361,64 @@
     display: none !important;
   }
 
+  /* 移动端底部导航栏 */
+  .mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    padding: 8px 0;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px 12px;
+    color: #94A3B8;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-radius: 12px;
+    min-width: 56px;
+  }
+
+  .mobile-nav-item:hover {
+    color: #F8FAFC;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .mobile-nav-item.active {
+    color: #60A5FA;
+  }
+
+  .mobile-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-nav-label {
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .sidebar {
@@ -320,14 +431,30 @@
     }
 
     .sidebar .nav-label,
-    .sidebar .logo-text,
-    .sidebar .theme-toggle::after {
+    .sidebar .logo-text {
       opacity: 1;
       transform: translateX(0);
     }
 
     .toggle-btn {
       display: none;
+    }
+
+    /* 显示移动端底部导航 */
+    .mobile-bottom-nav {
+      display: flex;
+    }
+  }
+
+  /* 更小屏幕优化 */
+  @media (max-width: 380px) {
+    .mobile-nav-label {
+      font-size: 10px;
+    }
+    
+    .mobile-nav-item {
+      padding: 4px 8px;
+      min-width: 48px;
     }
   }
 </style>
@@ -367,6 +494,7 @@
 
   // Active section tracking
   const navItems = document.querySelectorAll('.nav-item');
+  const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
   const sections = document.querySelectorAll('section[id]');
 
   function updateActiveNav() {
@@ -378,7 +506,16 @@
       const id = section.getAttribute('id');
 
       if (scrollPos >= top && scrollPos < top + height) {
+        // 更新桌面端导航
         navItems.forEach(item => {
+          item.classList.remove('active');
+          if (item.getAttribute('data-section') === id) {
+            item.classList.add('active');
+          }
+        });
+        
+        // 更新移动端导航
+        mobileNavItems.forEach(item => {
           item.classList.remove('active');
           if (item.getAttribute('data-section') === id) {
             item.classList.add('active');
@@ -391,44 +528,56 @@
   window.addEventListener('scroll', updateActiveNav);
   updateActiveNav();
 
-  // Smooth scroll for anchor links
+  // Smooth scroll for anchor links (桌面端)
   navItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      const href = item.getAttribute('href');
-      if (!href) return;
-      
-      // 如果是页面链接（以 / 开头），不阻止默认行为
-      if (href.startsWith('/')) {
-        // Close mobile menu
-        sidebar?.classList.remove('mobile-open');
-        overlay?.classList.remove('active');
-        return;
-      }
-      
-      // 锚点链接处理
-      e.preventDefault();
-      
-      // 检查当前是否在首页
-      const currentPath = window.location.pathname;
-      const isHomePage = currentPath === '/' || currentPath === '/index.html' || currentPath === '';
-      
-      if (isHomePage) {
-        // 在首页，直接滚动到对应位置
-        const targetId = href;
-        const targetSection = document.querySelector(targetId);
-        if (targetSection) {
-          targetSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      } else {
-        // 不在首页，先跳转到首页，再滚动到对应位置
-        window.location.href = '/' + href;
-      }
-      
+      handleNavClick(e, item);
+    });
+  });
+
+  // Smooth scroll for anchor links (移动端)
+  mobileNavItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      handleNavClick(e, item);
+    });
+  });
+
+  // 处理导航点击的通用函数
+  function handleNavClick(e: Event, item: Element) {
+    const href = item.getAttribute('href');
+    if (!href) return;
+    
+    // 如果是页面链接（以 / 开头），不阻止默认行为
+    if (href.startsWith('/')) {
       // Close mobile menu
       sidebar?.classList.remove('mobile-open');
       overlay?.classList.remove('active');
-    });
-  });
+      return;
+    }
+    
+    // 锚点链接处理
+    e.preventDefault();
+    
+    // 检查当前是否在首页
+    const currentPath = window.location.pathname;
+    const isHomePage = currentPath === '/' || currentPath === '/index.html' || currentPath === '';
+    
+    if (isHomePage) {
+      // 在首页，直接滚动到对应位置
+      const targetId = href;
+      const targetSection = document.querySelector(targetId);
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // 不在首页，先跳转到首页，再滚动到对应位置
+      window.location.href = '/' + href;
+    }
+    
+    // Close mobile menu
+    sidebar?.classList.remove('mobile-open');
+    overlay?.classList.remove('active');
+  }
 
   // 处理页面链接的高亮
   const currentPath = window.location.pathname;
