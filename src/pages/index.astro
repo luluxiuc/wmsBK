@@ -1,364 +1,599 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import AIChat from '../components/AIChat.astro';
 
 const baseUrl = import.meta.env.BASE_URL;
-
-// 获取内容数据
-const aboutEntries = await getCollection('about');
-const about = aboutEntries[0]?.data;
-
-const allProjects = await getCollection('projects');
-const recentProjects = allProjects
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 3);
-
-const allResources = await getCollection('resources');
-const topResources = allResources
-  .sort((a, b) => (b.data.rating || 0) - (a.data.rating || 0))
-  .slice(0, 4);
 ---
 
-<BaseLayout title="wms - 个人作品集" description="wms 的个人作品集网站，展示项目作品和资源分享">
-  <!-- Hero Section -->
-  <section class="relative min-h-[90vh] flex items-center overflow-hidden">
-    <!-- Background decoration -->
-    <div class="absolute inset-0 -z-10">
-      <div class="absolute top-20 right-10 w-72 h-72 bg-sky-400/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-20 left-10 w-96 h-96 bg-nebula-400/10 rounded-full blur-3xl"></div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      <div class="grid lg:grid-cols-2 gap-12 items-center">
-        <!-- Left: Content -->
-        <div class="space-y-8">
-          <div class="inline-flex items-center gap-2 px-4 py-2 bg-sky-400/15 rounded-pill border border-sky-400/30">
-            <span class="w-2 h-2 bg-sky-400 rounded-full animate-pulse shadow-glow"></span>
-            <span class="text-sm font-medium text-sky-400">{about?.title || '高中生 / 编程爱好者 / 正在成为AI应用者'}</span>
-          </div>
-
-          <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-star-100 leading-[1.1]">
-            创造数字<br/>
-            <span class="text-gradient">体验</span>的艺术
-          </h1>
-
-          <p class="text-lg sm:text-xl text-star-200 max-w-lg leading-relaxed">
-            {about?.bio || '热爱技术与设计的创作者，专注于构建优雅且实用的数字产品。'}
+<BaseLayout title="wms - 个人空间" description="通过 AI 对话了解我，探索我的数字花园">
+  <!-- Hero / Intro Section -->
+  <section id="intro" class="section min-h-screen flex items-center">
+    <div class="section-content">
+      <div class="intro-card">
+        <div class="intro-badge">
+          <span class="badge-dot"></span>
+          欢迎来到我的数字空间
+        </div>
+        
+        <h1 class="intro-title">
+          你好，我是 <span class="gradient-text">wms</span>
+        </h1>
+        
+        <p class="intro-description">
+          这是一个不一样的个人网站。
+        </p>
+        
+        <div class="intro-purpose">
+          <h2>这个网站的目的</h2>
+          <p>
+            我不太相信"标准人生"。但我相信：认真思考过的人，必须自己选择怎么活。
           </p>
-
-          <div class="flex flex-wrap gap-4">
-            <a href={`${baseUrl}projects/`} class="btn-primary">
-              查看作品
-              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-              </svg>
-            </a>
-            <a href={`${baseUrl}resources/`} class="btn-ghost">
-              探索资源
-            </a>
-          </div>
-
-          <!-- Stats -->
-          <div class="flex gap-8 pt-4">
-            <div>
-              <div class="text-3xl font-black text-star-100">{allProjects.length}+</div>
-              <div class="text-sm text-star-300">项目作品</div>
-            </div>
-            <div>
-              <div class="text-3xl font-black text-star-100">{allResources.length}+</div>
-              <div class="text-sm text-star-300">资源分享</div>
-            </div>
-            <div>
-              <div class="text-3xl font-black text-star-100">3+</div>
-              <div class="text-sm text-star-300">年经验</div>
-            </div>
-          </div>
+          <p>
+            这个网站不是简历，是我留下的思维地图。里面有代码，有文字，有对 AI 的尝试，也有对"人该怎么学习、怎么存在"的追问。
+          </p>
+          <p>
+            如果你读到某句话觉得"这人也这样想过"——欢迎继续探索。
+          </p>
         </div>
 
-        <!-- Right: Visual -->
-        <div class="relative hidden lg:block">
-          <div class="relative w-full aspect-square max-w-lg mx-auto">
-            <!-- Main card -->
-            <div class="absolute inset-0 bg-gradient-to-br from-sky-400 to-nebula-400 rounded-3xl rotate-3 shadow-2xl shadow-glow"></div>
-            <div class="absolute inset-0 bg-cosmos-700 rounded-3xl shadow-xl flex flex-col justify-center items-center p-8 border border-cosmos-600">
-              <img
-                src={`${import.meta.env.BASE_URL}images/logo.png`}
-                alt="wms logo"
-                class="w-32 h-32 rounded-2xl object-cover mb-6 shadow-glow"
-              />
-              <h3 class="text-2xl font-bold text-star-100 mb-2">wms</h3>
-              <p class="text-star-300 text-center">思考者，写代码，也写自己</p>
-              
-              <!-- Tech badges -->
-              <div class="flex flex-wrap justify-center gap-2 mt-6">
-                {['Astro', 'React', 'TypeScript'].map((tech) => (
-                  <span class="px-3 py-1 bg-cosmos-600 text-sky-400 text-xs font-medium rounded-pill border border-cosmos-500">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <!-- Floating elements -->
-            <div class="absolute -top-4 -right-4 bg-cosmos-700 rounded-2xl shadow-lg p-4 animate-bounce border border-cosmos-600" style="animation-duration: 3s;">
-              <div class="flex items-center gap-2">
-                <span class="text-2xl">🚀</span>
-                <span class="text-sm font-semibold text-sky-400">Launch</span>
-              </div>
-            </div>
-
-            <div class="absolute -bottom-4 -left-4 bg-cosmos-700 rounded-2xl shadow-lg p-4 border border-cosmos-600" style="animation: bounce 3s infinite 0.5s;">
-              <div class="flex items-center gap-2">
-                <span class="text-2xl">✨</span>
-                <span class="text-sm font-semibold text-sky-400">Design</span>
-              </div>
-            </div>
+        <div class="scroll-hint">
+          <span>向下滚动，与 AI 对话了解我</span>
+          <div class="scroll-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Recent Projects Section -->
-  <section class="py-24 bg-cosmos-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-        <div>
-          <h2 class="text-4xl font-black text-star-100 mb-4">最新作品</h2>
-          <p class="text-star-200 max-w-xl">探索我最近完成的项目，每一个都倾注了对细节的追求。</p>
+  <!-- About Section -->
+  <section id="about" class="section">
+    <div class="section-content">
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="card-icon">👋</div>
+          <h3>关于我</h3>
+          <p>
+            高中生 / 编程爱好者 / AI 应用学习者
+          </p>
+          <p>
+            正在探索技术与设计的交叉点，喜欢构建优雅且实用的数字产品。
+          </p>
         </div>
-        <a href={`${baseUrl}projects/`} class="btn-secondary self-start sm:self-auto">
-          查看全部
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-          </svg>
-        </a>
-      </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {recentProjects.map((project) => (
-          <article class="project-card group">
-            <!-- Cover -->
-            <div class="relative h-48 -mx-6 -mt-6 mb-6 rounded-t-2xl overflow-hidden bg-gradient-to-br from-cosmos-600 to-cosmos-800">
-              <div class="absolute inset-0 flex items-center justify-center text-star-100 text-5xl">
-                🚀
-              </div>
-              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
-            </div>
+        <div class="about-card">
+          <div class="card-icon">💡</div>
+          <h3>我的理念</h3>
+          <p>
+            实践优先，做中学，学中做。
+          </p>
+          <p>
+            善用 AI 工具加速学习，但保持独立思考。
+          </p>
+        </div>
 
-            <!-- Content -->
-            <div class="space-y-4">
-              <div class="flex flex-wrap gap-2">
-                {project.data.tags.slice(0, 2).map((tag) => (
-                  <span class="tag">{tag}</span>
-                ))}
-              </div>
+        <div class="about-card">
+          <div class="card-icon">🚀</div>
+          <h3>正在做</h3>
+          <p>
+            深入学习前端技术，掌握 AI 应用开发。
+          </p>
+          <p>
+            持续输出优质内容，构建个人知识体系。
+          </p>
+        </div>
 
-              <h3 class="text-xl font-bold text-star-100 group-hover:text-sky-400 transition-colors">
-                {project.data.title}
-              </h3>
-
-              <p class="text-star-200 line-clamp-2">
-                {project.data.description}
-              </p>
-
-              <div class="flex gap-3 pt-2">
-                {project.data.demo_url && (
-                  <a 
-                    href={project.data.demo_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-sm font-medium text-sky-400 hover:text-sky-300 transition-colors"
-                  >
-                    在线演示 →
-                  </a>
-                )}
-                {project.data.github_url && (
-                  <a 
-                    href={project.data.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-sm font-medium text-star-300 hover:text-sky-400 transition-colors"
-                  >
-                    源代码 →
-                  </a>
-                )}
-              </div>
-            </div>
-          </article>
-        ))}
+        <div class="about-card">
+          <div class="card-icon">🎯</div>
+          <h3>目标</h3>
+          <p>
+            成为全栈开发者，创造有价值的产品。
+          </p>
+          <p>
+            保持终身学习，认真选择自己的人生。
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Resources Section -->
-  <section class="py-24 bg-cosmos-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-        <div>
-          <h2 class="text-4xl font-black text-star-100 mb-4">热门资源</h2>
-          <p class="text-star-200 max-w-xl">精选的开发工具、教程和资源，助你提升效率。</p>
-        </div>
-        <a href={`${baseUrl}resources/`} class="btn-ghost self-start sm:self-auto">
-          浏览全部
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-          </svg>
-        </a>
+  <!-- AI Chat Section -->
+  <section id="chat" class="section">
+    <div class="section-content">
+      <div class="chat-section-header">
+        <h2 class="section-title">
+          <span class="title-icon">🤖</span>
+          与 AI 对话了解我
+        </h2>
+        <p class="section-subtitle">
+          想更深入地了解我？直接向 AI 助手提问吧！
+        </p>
+      </div>
+      
+      <div class="chat-wrapper">
+        <AIChat />
       </div>
 
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {topResources.map((resource) => (
-          <a 
-            href={resource.data.download_link}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="bento-card group hover:shadow-card-hover transition-all duration-300"
-          >
-            <div class="w-14 h-14 bg-sky-400/15 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform border border-sky-400/30">
-              {resource.data.category === '工具' && '🔧'}
-              {resource.data.category === '书籍' && '📚'}
-              {resource.data.category === '代码' && '💻'}
-              {resource.data.category === '教程' && '📖'}
-              {resource.data.category === '其他' && '📦'}
-            </div>
+      <div class="chat-tips">
+        <p>💡 提示：你可以问 "你是谁？"、"你的技能？"、"你的项目？"、"怎么联系你？" 等问题</p>
+      </div>
+    </div>
+  </section>
 
-            <h3 class="text-lg font-bold text-star-100 mb-2 group-hover:text-sky-400 transition-colors">
-              {resource.data.resource_name}
-            </h3>
-
-            <p class="text-sm text-star-200 line-clamp-2 mb-4">
-              {resource.data.description}
+  <!-- More Section -->
+  <section id="more" class="section">
+    <div class="section-content">
+      <h2 class="section-title">更多</h2>
+      
+      <div class="more-content">
+        <div class="more-card">
+          <h3>我想说的话</h3>
+          <div class="thoughts">
+            <blockquote>
+              "我不太相信'标准人生'。"
+            </blockquote>
+            <p>
+              这个世界有太多"应该"——你应该上什么学，应该找什么工作，应该什么时候结婚...
+            </p>
+            <p>
+              但每个人都是独特的个体，有自己的节奏和方向。我不想被这些"应该"绑架，而是想认真思考后，做出自己的选择。
+            </p>
+            
+            <blockquote>
+              "认真思考过的人，必须自己选择怎么活。"
+            </blockquote>
+            <p>
+              思考是痛苦的，因为它意味着质疑、迷茫、不确定。但不思考更可怕，因为那意味着盲目地活着。
+            </p>
+            <p>
+              我宁愿在思考中迷茫，也不愿在不思考中麻木。
             </p>
 
-            <div class="flex items-center justify-between">
-              <span class="tag text-xs">{resource.data.category}</span>
-              {resource.data.rating && (
-                <span class="text-yellow-500 text-sm">{'★'.repeat(resource.data.rating)}</span>
-              )}
+            <blockquote>
+              "关于技术"
+            </blockquote>
+            <p>
+              技术是我的工具，也是我的表达方式。我喜欢用代码构建东西，喜欢那种把想法变成现实的成就感。
+            </p>
+            <p>
+              但技术不是目的，目的是创造价值，是解决问题，是让生活变得更好。
+            </p>
+
+            <blockquote>
+              "关于 AI"
+            </blockquote>
+            <p>
+              AI 是一个强大的工具，但它不会取代思考。我用 AI 来加速学习，来探索可能性，但最终的判断和选择，必须来自我自己。
+            </p>
+            <p>
+              我相信 AI 会让强者更强，但前提是，你要先成为那个强者。
+            </p>
+
+            <blockquote>
+              "关于这个网站"
+            </blockquote>
+            <p>
+              这个网站是我留下的痕迹。也许有一天我会回头看，会笑当时的自己多么幼稚。但那也是成长的一部分。
+            </p>
+            <p>
+              如果你读到了这里，谢谢你愿意了解我。如果你也有类似的想法，欢迎交流。
+            </p>
+          </div>
+        </div>
+
+        <div class="links-card">
+          <h3>探索更多</h3>
+          <div class="link-list">
+            <a href={`${baseUrl}blog/`} class="link-item">
+              <span class="link-icon">📝</span>
+              <div class="link-info">
+                <span class="link-title">博客</span>
+                <span class="link-desc">技术文章与思考</span>
+              </div>
+            </a>
+            <a href={`${baseUrl}projects/`} class="link-item">
+              <span class="link-icon">🚀</span>
+              <div class="link-info">
+                <span class="link-title">作品</span>
+                <span class="link-desc">项目展示</span>
+              </div>
+            </a>
+            <a href={`${baseUrl}resources/`} class="link-item">
+              <span class="link-icon">📦</span>
+              <div class="link-info">
+                <span class="link-title">资源</span>
+                <span class="link-desc">分享与收藏</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="contact-section">
+            <h4>联系我</h4>
+            <div class="contact-buttons">
+              <button class="contact-btn" id="copy-qq">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                </svg>
+                QQ: 2121815491
+              </button>
+              <a href="https://github.com/luluxiuc" target="_blank" rel="noopener noreferrer" class="contact-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub
+              </a>
             </div>
-          </a>
-        ))}
+          </div>
+        </div>
       </div>
     </div>
   </section>
-
-  <!-- CTA Section -->
-  <section class="py-24 bg-gradient-to-br from-cosmos-700 to-cosmos-900">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-4xl sm:text-5xl font-black text-star-100 mb-6">
-        有想法？
-      </h2>
-      <p class="text-xl text-star-200 mb-10 max-w-2xl mx-auto">
-        我不太相信"标准人生"。<br/>
-        <br/>
-        但我相信：认真思考过的人，必须自己选择怎么活。<br/>
-        <br/>
-        这个网站不是简历，是我留下的思维地图。<br/>
-        里面有代码，有文字，有对AI的尝试，也有对"人该怎么学习、怎么存在"的追问。<br/>
-        <br/>
-        如果你读到某句话觉得"这人也这样想过"——<br/>
-        欢迎留下痕迹
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <button id="contact-btn" class="btn-primary cursor-pointer">
-          联系我
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-          </svg>
-        </button>
-        <a href="https://github.com/luluxiuc" target="_blank" rel="noopener noreferrer" class="px-8 py-4 bg-cosmos-600 text-star-100 font-semibold rounded-pill hover:bg-cosmos-500 transition-all duration-150 border border-cosmos-500">
-          GitHub
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- QQ Contact Modal -->
-  <div id="qq-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
-    <div class="bg-cosmos-700 rounded-3xl p-8 max-w-sm mx-4 text-center shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-cosmos-600" id="qq-modal-content">
-      <div class="w-16 h-16 bg-gradient-to-br from-sky-400 to-nebula-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-glow">
-        💬
-      </div>
-      <h3 class="text-2xl font-bold text-star-100 mb-2">联系我</h3>
-      <p class="text-star-200 mb-6">QQ：2121815491</p>
-      <div class="flex gap-3">
-        <button id="copy-qq-btn" class="flex-1 btn-primary py-3 text-sm">
-          复制号码
-        </button>
-        <button id="close-modal-btn" class="flex-1 btn-ghost py-3 text-sm">
-          关闭
-        </button>
-      </div>
-    </div>
-  </div>
 </BaseLayout>
 
-<script>
-  // QQ Modal functionality
-  const contactBtn = document.getElementById('contact-btn');
-  const qqModal = document.getElementById('qq-modal');
-  const qqModalContent = document.getElementById('qq-modal-content');
-  const closeModalBtn = document.getElementById('close-modal-btn');
-  const copyQqBtn = document.getElementById('copy-qq-btn');
-  const qqNumber = '2121815491';
+<style>
+  /* Section Base */
+  .section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 80px 0;
+  }
 
-  // Open modal
-  contactBtn?.addEventListener('click', () => {
-    qqModal?.classList.remove('hidden');
-    qqModal?.classList.add('flex');
-    setTimeout(() => {
-      qqModalContent?.classList.remove('scale-95', 'opacity-0');
-      qqModalContent?.classList.add('scale-100', 'opacity-100');
-    }, 10);
-  });
+  .section-content {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
 
-  // Close modal
-  const closeModal = () => {
-    qqModalContent?.classList.remove('scale-100', 'opacity-100');
-    qqModalContent?.classList.add('scale-95', 'opacity-0');
-    setTimeout(() => {
-      qqModal?.classList.add('hidden');
-      qqModal?.classList.remove('flex');
-    }, 300);
-  };
+  /* Intro Section */
+  .intro-card {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
 
-  closeModalBtn?.addEventListener('click', closeModal);
+  .intro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(96, 165, 250, 0.15);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 20px;
+    color: #60A5FA;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 32px;
+  }
 
-  // Close on backdrop click
-  qqModal?.addEventListener('click', (e) => {
-    if (e.target === qqModal) {
-      closeModal();
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    background: #10B981;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .intro-title {
+    font-size: clamp(40px, 8vw, 64px);
+    font-weight: 900;
+    color: #F8FAFC;
+    margin: 0 0 24px;
+    line-height: 1.1;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #60A5FA, #7C3AED);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .intro-description {
+    font-size: 20px;
+    color: #94A3B8;
+    margin-bottom: 48px;
+  }
+
+  .intro-purpose {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 32px;
+    text-align: left;
+    margin-bottom: 48px;
+  }
+
+  .intro-purpose h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin: 0 0 20px;
+  }
+
+  .intro-purpose p {
+    font-size: 16px;
+    color: #CBD5E1;
+    line-height: 1.8;
+    margin: 0 0 16px;
+  }
+
+  .intro-purpose p:last-child {
+    margin-bottom: 0;
+  }
+
+  .scroll-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: #64748B;
+    font-size: 14px;
+  }
+
+  .scroll-arrow {
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+  }
+
+  /* About Section */
+  .about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+
+  .about-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 28px;
+    transition: all 0.3s ease;
+  }
+
+  .about-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(96, 165, 250, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .about-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin: 0 0 12px;
+  }
+
+  .about-card p {
+    font-size: 14px;
+    color: #94A3B8;
+    line-height: 1.7;
+    margin: 0 0 8px;
+  }
+
+  .about-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Chat Section */
+  .chat-section-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .section-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #F8FAFC;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .title-icon {
+    font-size: 32px;
+  }
+
+  .section-subtitle {
+    font-size: 18px;
+    color: #94A3B8;
+    margin: 0;
+  }
+
+  .chat-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .chat-tips {
+    text-align: center;
+    margin-top: 24px;
+    color: #64748B;
+    font-size: 14px;
+  }
+
+  /* More Section */
+  .more-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 32px;
+  }
+
+  @media (max-width: 768px) {
+    .more-content {
+      grid-template-columns: 1fr;
     }
-  });
+  }
 
+  .more-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 32px;
+  }
+
+  .more-card h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin: 0 0 24px;
+  }
+
+  .thoughts blockquote {
+    font-size: 18px;
+    font-weight: 600;
+    color: #60A5FA;
+    margin: 32px 0 16px;
+    padding-left: 20px;
+    border-left: 3px solid #60A5FA;
+  }
+
+  .thoughts blockquote:first-child {
+    margin-top: 0;
+  }
+
+  .thoughts p {
+    font-size: 15px;
+    color: #CBD5E1;
+    line-height: 1.9;
+    margin: 0 0 16px;
+  }
+
+  /* Links Card */
+  .links-card {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .links-card h3,
+  .links-card h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin: 0;
+  }
+
+  .link-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .link-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .link-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(96, 165, 250, 0.3);
+    transform: translateX(4px);
+  }
+
+  .link-icon {
+    font-size: 24px;
+  }
+
+  .link-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .link-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #F8FAFC;
+  }
+
+  .link-desc {
+    font-size: 13px;
+    color: #64748B;
+  }
+
+  .contact-section {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .contact-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #CBD5E1;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .contact-btn:hover {
+    background: rgba(96, 165, 250, 0.15);
+    border-color: rgba(96, 165, 250, 0.3);
+    color: #60A5FA;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+
+<script>
   // Copy QQ number
-  copyQqBtn?.addEventListener('click', async () => {
+  const copyBtn = document.getElementById('copy-qq');
+  copyBtn?.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(qqNumber);
-      copyQqBtn.textContent = '已复制';
+      await navigator.clipboard.writeText('2121815491');
+      const originalText = copyBtn.innerHTML;
+      copyBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        已复制！
+      `;
       setTimeout(() => {
-        copyQqBtn.textContent = '复制号码';
+        copyBtn.innerHTML = originalText;
       }, 2000);
     } catch (err) {
       console.error('复制失败:', err);
-      // Fallback
-      const textArea = document.createElement('textarea');
-      textArea.value = qqNumber;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      document.body.appendChild(textArea);
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        copyQqBtn.textContent = '已复制';
-        setTimeout(() => {
-          copyQqBtn.textContent = '复制号码';
-        }, 2000);
-      } catch (err) {
-        console.error('复制失败:', err);
-      }
-      document.body.removeChild(textArea);
     }
   });
 </script>

@@ -135,46 +135,33 @@ const allTags = [...new Set(projects.flatMap(p => p.data.tags))];
 </BaseLayout>
 
 <script>
-  // 筛选功能
+  import { 
+    FilterManager, 
+    setupCategoryButtons 
+  } from '../utils/filterUtils';
+
+  // 获取DOM元素
   const filterBtns = document.querySelectorAll('.filter-btn');
   const projectCards = document.querySelectorAll('.project-card');
   const emptyState = document.getElementById('empty-state');
   const projectsGrid = document.getElementById('projects-grid');
 
-  filterBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const filter = btn.getAttribute('data-filter');
-
-      // 更新按钮样式
-      filterBtns.forEach((b) => {
-        b.classList.remove('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
-        b.classList.add('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
-      });
-      btn.classList.remove('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
-      btn.classList.add('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
-
-      // 筛选项目
-      let visibleCount = 0;
-      projectCards.forEach((card) => {
-        const tags = card.getAttribute('data-tags') || '';
-        if (filter === 'all' || tags.includes(filter)) {
-          card.classList.remove('hidden');
-          visibleCount++;
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-
-      // 显示/隐藏空状态
-      if (visibleCount === 0) {
-        emptyState?.classList.remove('hidden');
-        projectsGrid?.classList.add('hidden');
-      } else {
-        emptyState?.classList.add('hidden');
-        projectsGrid?.classList.remove('hidden');
-      }
-    });
+  // 创建筛选管理器
+  const filterManager = new FilterManager({
+    elements: projectCards,
+    elementSelector: '.project-card',
+    emptyState,
+    gridContainer: projectsGrid,
+    dataExtractor: (element) => ({
+      tags: element.getAttribute('data-tags') || ''
+    }),
+    conditionMatcher: (data, condition) => {
+      return !condition.category || (data.tags?.includes(condition.category) ?? false);
+    }
   });
+
+  // 设置分类按钮监听器
+  setupCategoryButtons(filterBtns, filterManager);
 
   // 处理带提示的演示链接
   const demoLinks = document.querySelectorAll('.demo-link');

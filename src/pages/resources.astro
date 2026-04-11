@@ -139,68 +139,44 @@ const categoryIcons: Record<string, string> = {
 </BaseLayout>
 
 <script>
-  // 搜索和筛选功能
+  import { 
+    FilterManager, 
+    setupSearchListener, 
+    setupCategoryButtons 
+  } from '../utils/filterUtils';
+
+  // 获取DOM元素
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const resourceItems = document.querySelectorAll('.resource-item');
   const emptyState = document.getElementById('empty-state');
   const resourcesGrid = document.getElementById('resources-grid');
   const categoryBtns = document.querySelectorAll('.category-btn');
 
-  let currentCategory = 'all';
-  let currentSearch = '';
-
-  function filterResources() {
-    let visibleCount = 0;
-
-    resourceItems.forEach((item) => {
-      const category = item.getAttribute('data-category') || '';
-      const name = item.getAttribute('data-name') || '';
-      const description = item.getAttribute('data-description') || '';
-
-      const matchesCategory = currentCategory === 'all' || category === currentCategory;
-      const matchesSearch = currentSearch === '' || 
-        name.includes(currentSearch.toLowerCase()) || 
-        description.includes(currentSearch.toLowerCase());
-
-      if (matchesCategory && matchesSearch) {
-        item.classList.remove('hidden');
-        visibleCount++;
-      } else {
-        item.classList.add('hidden');
-      }
-    });
-
-    // 显示/隐藏空状态
-    if (visibleCount === 0) {
-      emptyState?.classList.remove('hidden');
-      resourcesGrid?.classList.add('hidden');
-    } else {
-      emptyState?.classList.add('hidden');
-      resourcesGrid?.classList.remove('hidden');
+  // 创建筛选管理器
+  const filterManager = new FilterManager({
+    elements: resourceItems,
+    elementSelector: '.resource-item',
+    emptyState,
+    gridContainer: resourcesGrid,
+    dataExtractor: (element) => ({
+      category: element.getAttribute('data-category') || '',
+      name: element.getAttribute('data-name') || '',
+      description: element.getAttribute('data-description') || ''
+    }),
+    conditionMatcher: (data, condition) => {
+      const matchesCategory = !condition.category || data.category === condition.category;
+      const matchesSearch = !condition.search || 
+        data.name?.toLowerCase().includes(condition.search.toLowerCase()) || 
+        data.description?.toLowerCase().includes(condition.search.toLowerCase()) ||
+        false;
+      
+      return matchesCategory && matchesSearch;
     }
-  }
-
-  // 搜索输入监听
-  searchInput?.addEventListener('input', (e) => {
-    currentSearch = (e.target as HTMLInputElement).value;
-    filterResources();
   });
 
-  // 分类按钮监听
-  categoryBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const category = btn.getAttribute('data-category') || 'all';
-      currentCategory = category;
+  // 设置搜索监听器
+  setupSearchListener(searchInput, filterManager);
 
-      // 更新按钮样式
-      categoryBtns.forEach((b) => {
-        b.classList.remove('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
-        b.classList.add('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
-      });
-      btn.classList.remove('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
-      btn.classList.add('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
-
-      filterResources();
-    });
-  });
+  // 设置分类按钮监听器
+  setupCategoryButtons(categoryBtns, filterManager);
 </script>

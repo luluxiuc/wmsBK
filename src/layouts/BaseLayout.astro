@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
-import Navigation from '../components/Navigation.astro';
-import Footer from '../components/Footer.astro';
+import CosmicBackground from '../components/CosmicBackground.astro';
+import Sidebar from '../components/Sidebar.astro';
 
 interface Props {
   title?: string;
@@ -9,8 +9,8 @@ interface Props {
 }
 
 const { 
-  title = 'wms - 个人作品集', 
-  description = 'wms 的个人作品集网站，展示项目作品和资源分享' 
+  title = 'wms - 个人空间', 
+  description = '通过 AI 对话了解我，探索我的数字花园' 
 } = Astro.props;
 ---
 
@@ -31,7 +31,7 @@ const {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <!-- Inter font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     
     <!-- Theme initialization script to prevent flash -->
     <script is:inline>
@@ -43,13 +43,69 @@ const {
       }
     </script>
   </head>
-  <body class="min-h-screen flex flex-col transition-colors">
-    <Navigation />
+  <body class="min-h-screen">
+    <!-- 宇宙星空背景 -->
+    <CosmicBackground />
     
-    <main class="flex-grow">
+    <!-- 左侧导航栏 -->
+    <Sidebar />
+    
+    <!-- 主内容区 -->
+    <main class="main-content">
       <slot />
     </main>
-    
-    <Footer />
   </body>
 </html>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #F8FAFC;
+    overflow-x: hidden;
+  }
+
+  .main-content {
+    margin-left: 72px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 当侧边栏展开时调整主内容区 */
+  :global(.sidebar.expanded) ~ .main-content {
+    margin-left: 200px;
+  }
+
+  /* 响应式：移动端 */
+  @media (max-width: 768px) {
+    .main-content {
+      margin-left: 0;
+    }
+  }
+
+  /* 全局滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* 选中文字样式 */
+  ::selection {
+    background: rgba(96, 165, 250, 0.3);
+    color: #F8FAFC;
+  }
+</style>

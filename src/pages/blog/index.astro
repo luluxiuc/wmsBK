@@ -180,7 +180,17 @@ const totalPosts = sortedPosts.length;
 </BaseLayout>
 
 <script>
-  // 搜索和筛选功能
+  import { 
+    FilterManager, 
+    setupSearchListener, 
+    setupCategoryButtons, 
+    setupTagButtons,
+    TAG_BUTTON_STYLES,
+    updateButtonStyle,
+    resetButtonGroupStyles
+  } from '../../utils/filterUtils';
+
+  // 获取DOM元素
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const postCards = document.querySelectorAll('.post-card');
   const emptyState = document.getElementById('empty-state');
@@ -188,92 +198,39 @@ const totalPosts = sortedPosts.length;
   const filterBtns = document.querySelectorAll('.filter-btn');
   const tagBtns = document.querySelectorAll('.tag-btn');
 
-  let currentCategory = 'all';
-  let currentSearch = '';
-  let currentTag = '';
-
-  function filterPosts() {
-    let visibleCount = 0;
-
-    postCards.forEach((card) => {
-      const category = card.getAttribute('data-category') || '';
-      const tags = card.getAttribute('data-tags') || '';
-      const title = card.getAttribute('data-title') || '';
-      const description = card.getAttribute('data-description') || '';
-
-      const matchesCategory = currentCategory === 'all' || category === currentCategory;
-      const matchesTag = currentTag === '' || tags.includes(currentTag);
-      const matchesSearch = currentSearch === '' || 
-        title.includes(currentSearch.toLowerCase()) || 
-        description.includes(currentSearch.toLowerCase());
-
-      if (matchesCategory && matchesTag && matchesSearch) {
-        card.classList.remove('hidden');
-        visibleCount++;
-      } else {
-        card.classList.add('hidden');
-      }
-    });
-
-    // 显示/隐藏空状态
-    if (visibleCount === 0) {
-      emptyState?.classList.remove('hidden');
-      postsGrid?.classList.add('hidden');
-    } else {
-      emptyState?.classList.add('hidden');
-      postsGrid?.classList.remove('hidden');
-    }
-  }
-
-  // 搜索输入监听
-  searchInput?.addEventListener('input', (e) => {
-    currentSearch = (e.target as HTMLInputElement).value;
-    filterPosts();
-  });
-
-  // 分类按钮监听
-  filterBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const filter = btn.getAttribute('data-filter') || 'all';
-      currentCategory = filter;
-      currentTag = ''; // 清除标签筛选
-
-      // 更新按钮样式
-      filterBtns.forEach((b) => {
-        b.classList.remove('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
-        b.classList.add('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
-      });
-      btn.classList.remove('bg-cosmos-700', 'text-star-200', 'font-medium', 'border', 'border-cosmos-600');
-      btn.classList.add('bg-sky-400', 'text-cosmos-800', 'font-semibold', 'shadow-glow');
-
-      // 清除标签按钮样式
-      tagBtns.forEach((b) => {
-        b.classList.remove('bg-sky-400/20', 'text-sky-400', 'border-sky-400/50');
-      });
-
-      filterPosts();
-    });
-  });
-
-  // 标签按钮监听
-  tagBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const tag = btn.getAttribute('data-tag') || '';
+  // 创建筛选管理器
+  const filterManager = new FilterManager({
+    elements: postCards,
+    elementSelector: '.post-card',
+    emptyState,
+    gridContainer: postsGrid,
+    dataExtractor: (element) => ({
+      category: element.getAttribute('data-category') || '',
+      tags: element.getAttribute('data-tags') || '',
+      title: element.getAttribute('data-title') || '',
+      description: element.getAttribute('data-description') || ''
+    }),
+    conditionMatcher: (data, condition) => {
+      const matchesCategory = !condition.category || data.category === condition.category;
+      const matchesTag = !condition.tag || (data.tags?.includes(condition.tag) ?? false);
+      const matchesSearch = !condition.search || 
+        data.title?.toLowerCase().includes(condition.search.toLowerCase()) || 
+        data.description?.toLowerCase().includes(condition.search.toLowerCase()) ||
+        false;
       
-      if (currentTag === tag) {
-        // 取消选择
-        currentTag = '';
-        btn.classList.remove('bg-sky-400/20', 'text-sky-400', 'border-sky-400/50');
-      } else {
-        // 选择新标签
-        currentTag = tag;
-        tagBtns.forEach((b) => {
-          b.classList.remove('bg-sky-400/20', 'text-sky-400', 'border-sky-400/50');
-        });
-        btn.classList.add('bg-sky-400/20', 'text-sky-400', 'border-sky-400/50');
-      }
-
-      filterPosts();
-    });
+      return matchesCategory && matchesTag && matchesSearch;
+    }
   });
+
+  // 设置搜索监听器
+  setupSearchListener(searchInput, filterManager);
+
+  // 设置分类按钮监听器
+  setupCategoryButtons(filterBtns, filterManager, () => {
+    // 清除标签按钮样式
+    resetButtonGroupStyles(tagBtns, TAG_BUTTON_STYLES.inactive);
+  });
+
+  // 设置标签按钮监听器
+  setupTagButtons(tagBtns, filterManager);
 </script>

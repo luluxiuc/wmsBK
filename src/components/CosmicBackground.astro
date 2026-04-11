@@ -1,0 +1,223 @@
+---
+// 宇宙星空背景组件
+// 使用 Canvas 实现高性能粒子动画
+---
+
+<canvas id="cosmic-canvas" class="cosmic-background"></canvas>
+
+<style>
+  .cosmic-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: linear-gradient(180deg, #0B0F19 0%, #0F172A 50%, #1a1a2e 100%);
+  }
+</style>
+
+<script>
+  class CosmicBackground {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private stars: Star[] = [];
+    private shootingStars: ShootingStar[] = [];
+    private animationId: number;
+    private width: number;
+    private height: number;
+    private isActive: boolean = true;
+
+    constructor() {
+      this.canvas = document.getElementById('cosmic-canvas') as HTMLCanvasElement;
+      this.ctx = this.canvas.getContext('2d')!;
+      
+      this.init();
+      this.createStars();
+      this.animate();
+      this.handleResize();
+      this.handleVisibility();
+    }
+
+    private init() {
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+    }
+
+    private createStars() {
+      const starCount = Math.min(800, Math.floor((this.width * this.height) / 2000));
+      
+      for (let i = 0; i < starCount; i++) {
+        this.stars.push(new Star(this.width, this.height));
+      }
+    }
+
+    private animate() {
+      if (!this.isActive) return;
+
+      this.ctx.clearRect(0, 0, this.width, this.height);
+
+      // 绘制星星
+      this.stars.forEach(star => {
+        star.update();
+        star.draw(this.ctx);
+      });
+
+      // 随机生成流星
+      if (Math.random() < 0.005) {
+        this.shootingStars.push(new ShootingStar(this.width, this.height));
+      }
+
+      // 绘制流星
+      this.shootingStars = this.shootingStars.filter(star => {
+        star.update();
+        star.draw(this.ctx);
+        return star.isAlive();
+      });
+
+      this.animationId = requestAnimationFrame(() => this.animate());
+    }
+
+    private handleResize() {
+      window.addEventListener('resize', () => {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        this.stars = [];
+        this.createStars();
+      });
+    }
+
+    private handleVisibility() {
+      document.addEventListener('visibilitychange', () => {
+        this.isActive = document.visibilityState === 'visible';
+        if (this.isActive) {
+          this.animate();
+        } else {
+          cancelAnimationFrame(this.animationId);
+        }
+      });
+    }
+  }
+
+  class Star {
+    x: number;
+    y: number;
+    size: number;
+    brightness: number;
+    twinkleSpeed: number;
+    twinkleDirection: number;
+    color: string;
+
+    constructor(canvasWidth: number, canvasHeight: number) {
+      this.x = Math.random() * canvasWidth;
+      this.y = Math.random() * canvasHeight;
+      this.size = Math.random() * 1.5 + 0.5;
+      this.brightness = Math.random() * 0.5 + 0.5;
+      this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+      this.twinkleDirection = Math.random() > 0.5 ? 1 : -1;
+      
+      // 星星颜色：白色、淡蓝、淡紫
+      const colors = ['#ffffff', '#BFDBFE', '#E9D5FF', '#F8FAFC'];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    update() {
+      this.brightness += this.twinkleSpeed * this.twinkleDirection;
+      
+      if (this.brightness >= 1) {
+        this.brightness = 1;
+        this.twinkleDirection = -1;
+      } else if (this.brightness <= 0.3) {
+        this.brightness = 0.3;
+        this.twinkleDirection = 1;
+      }
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.brightness;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // 大星星添加光晕
+      if (this.size > 1.2) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+        const gradient = ctx.createRadialGradient(
+          this.x, this.y, 0,
+          this.x, this.y, this.size * 2
+        );
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${this.brightness * 0.3})`);
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
+    }
+  }
+
+  class ShootingStar {
+    x: number;
+    y: number;
+    length: number;
+    speed: number;
+    angle: number;
+    opacity: number;
+    life: number;
+    maxLife: number;
+
+    constructor(canvasWidth: number, canvasHeight: number) {
+      this.x = Math.random() * canvasWidth;
+      this.y = Math.random() * canvasHeight * 0.5;
+      this.length = Math.random() * 80 + 40;
+      this.speed = Math.random() * 10 + 8;
+      this.angle = Math.PI / 4 + (Math.random() - 0.5) * 0.2;
+      this.opacity = 1;
+      this.life = 0;
+      this.maxLife = 30;
+    }
+
+    update() {
+      this.x += Math.cos(this.angle) * this.speed;
+      this.y += Math.sin(this.angle) * this.speed;
+      this.life++;
+      this.opacity = 1 - (this.life / this.maxLife);
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+      const endX = this.x - Math.cos(this.angle) * this.length;
+      const endY = this.y - Math.sin(this.angle) * this.length;
+
+      const gradient = ctx.createLinearGradient(this.x, this.y, endX, endY);
+      gradient.addColorStop(0, `rgba(255, 255, 255, ${this.opacity})`);
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(endX, endY);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // 头部光点
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+      ctx.fill();
+    }
+
+    isAlive() {
+      return this.life < this.maxLife;
+    }
+  }
+
+  // 初始化
+  document.addEventListener('DOMContentLoaded', () => {
+    new CosmicBackground();
+  });
+</script>
