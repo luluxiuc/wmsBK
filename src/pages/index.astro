@@ -16,7 +16,11 @@ const baseUrl = import.meta.env.BASE_URL;
         </div>
         
         <h1 class="intro-title">
-          你好，我是 <span class="gradient-text">wms</span>
+          你好，我是 
+          <span class="name-with-avatar">
+            <img src="/images/logo.png" alt="wms头像" class="intro-avatar" />
+            <span class="gradient-text">wms</span>
+          </span>
         </h1>
         
         <p class="intro-description">
@@ -125,109 +129,8 @@ const baseUrl = import.meta.env.BASE_URL;
   <!-- More Section -->
   <section id="more" class="section">
     <div class="section-content">
-      <h2 class="section-title">更多</h2>
-      
-      <div class="more-content">
-        <div class="more-card">
-          <h3>我想说的话</h3>
-          <div class="thoughts">
-            <blockquote>
-              "我不太相信'标准人生'。"
-            </blockquote>
-            <p>
-              这个世界有太多"应该"——你应该上什么学，应该找什么工作，应该什么时候结婚...
-            </p>
-            <p>
-              但每个人都是独特的个体，有自己的节奏和方向。我不想被这些"应该"绑架，而是想认真思考后，做出自己的选择。
-            </p>
-            
-            <blockquote>
-              "认真思考过的人，必须自己选择怎么活。"
-            </blockquote>
-            <p>
-              思考是痛苦的，因为它意味着质疑、迷茫、不确定。但不思考更可怕，因为那意味着盲目地活着。
-            </p>
-            <p>
-              我宁愿在思考中迷茫，也不愿在不思考中麻木。
-            </p>
-
-            <blockquote>
-              "关于技术"
-            </blockquote>
-            <p>
-              技术是我的工具，也是我的表达方式。我喜欢用代码构建东西，喜欢那种把想法变成现实的成就感。
-            </p>
-            <p>
-              但技术不是目的，目的是创造价值，是解决问题，是让生活变得更好。
-            </p>
-
-            <blockquote>
-              "关于 AI"
-            </blockquote>
-            <p>
-              AI 是一个强大的工具，但它不会取代思考。我用 AI 来加速学习，来探索可能性，但最终的判断和选择，必须来自我自己。
-            </p>
-            <p>
-              我相信 AI 会让强者更强，但前提是，你要先成为那个强者。
-            </p>
-
-            <blockquote>
-              "关于这个网站"
-            </blockquote>
-            <p>
-              这个网站是我留下的痕迹。也许有一天我会回头看，会笑当时的自己多么幼稚。但那也是成长的一部分。
-            </p>
-            <p>
-              如果你读到了这里，谢谢你愿意了解我。如果你也有类似的想法，欢迎交流。
-            </p>
-          </div>
-        </div>
-
-        <div class="links-card">
-          <h3>探索更多</h3>
-          <div class="link-list">
-            <a href={`${baseUrl}blog/`} class="link-item">
-              <span class="link-icon">📝</span>
-              <div class="link-info">
-                <span class="link-title">博客</span>
-                <span class="link-desc">技术文章与思考</span>
-              </div>
-            </a>
-            <a href={`${baseUrl}projects/`} class="link-item">
-              <span class="link-icon">🚀</span>
-              <div class="link-info">
-                <span class="link-title">作品</span>
-                <span class="link-desc">项目展示</span>
-              </div>
-            </a>
-            <a href={`${baseUrl}resources/`} class="link-item">
-              <span class="link-icon">📦</span>
-              <div class="link-info">
-                <span class="link-title">资源</span>
-                <span class="link-desc">分享与收藏</span>
-              </div>
-            </a>
-          </div>
-
-          <div class="contact-section">
-            <h4>联系我</h4>
-            <div class="contact-buttons">
-              <button class="contact-btn" id="copy-qq">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                </svg>
-                QQ: 2121815491
-              </button>
-              <a href="https://github.com/luluxiuc" target="_blank" rel="noopener noreferrer" class="contact-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-                GitHub
-              </a>
-            </div>
-          </div>
-        </div>
+      <div class="people-wansui">
+        人民万岁
       </div>
     </div>
   </section>
@@ -291,6 +194,35 @@ const baseUrl = import.meta.env.BASE_URL;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .name-with-avatar {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    vertical-align: middle;
+  }
+
+  .intro-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(96, 165, 250, 0.5);
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .intro-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(96, 165, 250, 0.5);
+  }
+
+  @media (max-width: 640px) {
+    .intro-avatar {
+      width: 48px;
+      height: 48px;
+    }
   }
 
   .intro-description {
@@ -568,6 +500,26 @@ const baseUrl = import.meta.env.BASE_URL;
     background: rgba(96, 165, 250, 0.15);
     border-color: rgba(96, 165, 250, 0.3);
     color: #60A5FA;
+  }
+
+  /* 人民万岁 */
+  .people-wansui {
+    font-size: clamp(60px, 15vw, 120px);
+    font-weight: 900;
+    color: #DC2626;
+    text-align: center;
+    text-shadow: 0 0 40px rgba(220, 38, 38, 0.5), 0 0 80px rgba(220, 38, 38, 0.3);
+    animation: glow 2s ease-in-out infinite alternate;
+    letter-spacing: 0.1em;
+  }
+
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 40px rgba(220, 38, 38, 0.5), 0 0 80px rgba(220, 38, 38, 0.3);
+    }
+    to {
+      text-shadow: 0 0 60px rgba(220, 38, 38, 0.8), 0 0 100px rgba(220, 38, 38, 0.5), 0 0 140px rgba(220, 38, 38, 0.3);
+    }
   }
 
   @keyframes pulse {

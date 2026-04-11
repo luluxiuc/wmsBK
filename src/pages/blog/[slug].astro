@@ -43,41 +43,43 @@ const readingTime = Math.ceil(post.body.split(/\s+/).length / 300);
 
 <BaseLayout title={`${post.data.title} - 博客 - wms`} description={post.data.description}>
   <!-- Article Header -->
-  <section class="pt-24 pb-12 bg-gradient-to-br from-cosmos-700 to-cosmos-900">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <section class="article-header">
+    <div class="article-header-content">
       <!-- Back Link -->
       <a 
         href={`${baseUrl}blog/`}
-        class="inline-flex items-center gap-2 text-star-300 hover:text-sky-400 transition-colors mb-8"
+        class="back-link"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
         返回博客列表
       </a>
 
-      <!-- Category -->
-      <div class="mb-4">
-        <span class="inline-flex items-center px-4 py-1.5 bg-sky-400/15 text-sky-400 text-sm font-semibold rounded-pill border border-sky-400/30">
-          {post.data.category}
-        </span>
+      <!-- Category Badge -->
+      <div class="category-badge">
+        <span class="badge-dot"></span>
+        {post.data.category}
       </div>
 
       <!-- Title -->
-      <h1 class="text-4xl sm:text-5xl font-black text-star-100 mb-6 leading-tight">
+      <h1 class="article-title">
         {post.data.title}
       </h1>
 
       <!-- Description -->
-      <p class="text-xl text-star-200 mb-8">
+      <p class="article-description">
         {post.data.description}
       </p>
 
       <!-- Meta Info -->
-      <div class="flex flex-wrap items-center gap-6 text-sm text-star-300">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      <div class="article-meta">
+        <div class="meta-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
           <time datetime={post.data.pubDate.toISOString()}>
             {formatDate(post.data.pubDate)}
@@ -85,66 +87,60 @@ const readingTime = Math.ceil(post.body.split(/\s+/).length / 300);
         </div>
         
         {post.data.updatedDate && (
-          <div class="flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <div class="meta-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0118.8-4.3M22 12.5a10 10 0 01-18.8 4.3"/>
             </svg>
             <span>更新于 {formatDate(post.data.updatedDate)}</span>
           </div>
         )}
         
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="meta-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
           </svg>
           <span>{readingTime} 分钟阅读</span>
         </div>
       </div>
 
       <!-- Tags -->
-      <div class="flex flex-wrap gap-2 mt-6">
+      <div class="article-tags">
         {post.data.tags.map((tag) => (
-          <a 
-            href={`/blog?tag=${tag}`}
-            class="text-sm text-star-300 bg-cosmos-600/50 hover:bg-cosmos-600 px-3 py-1 rounded-full transition-colors"
-          >
-            #{tag}
-          </a>
+          <span class="article-tag">#{tag}</span>
         ))}
       </div>
     </div>
   </section>
 
   <!-- Article Content -->
-  <article class="py-12 bg-cosmos-900">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="prose prose-invert prose-lg max-w-none prose-headings:text-star-100 prose-p:text-star-200 prose-a:text-sky-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-star-100 prose-code:text-sky-400 prose-code:bg-cosmos-700 prose-code:px-1 prose-code:rounded prose-pre:bg-cosmos-700 prose-pre:border prose-pre:border-cosmos-600 prose-blockquote:border-l-sky-400 prose-blockquote:text-star-300 prose-li:text-star-200">
+  <article class="article-content">
+    <div class="article-body">
+      <div class="prose prose-invert prose-lg max-w-none">
         <Content />
       </div>
 
       <!-- Article Footer -->
-      <div class="mt-12 pt-8 border-t border-cosmos-600">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <div class="flex items-center gap-4">
-            <span class="text-star-300">分享文章：</span>
+      <div class="article-footer">
+        <div class="footer-actions">
+          <div class="share-section">
+            <span class="share-label">分享文章：</span>
             <button 
               onclick="copyLink()"
-              class="flex items-center gap-2 px-4 py-2 bg-cosmos-700 hover:bg-cosmos-600 text-star-200 rounded-lg transition-colors"
+              class="copy-btn"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
               </svg>
               复制链接
             </button>
           </div>
           
-          <a
-            href={`${baseUrl}blog/`}
-            class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 transition-colors"
-          >
+          <a href={`${baseUrl}blog/`} class="more-link">
             查看更多文章
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </a>
         </div>
@@ -153,9 +149,9 @@ const readingTime = Math.ceil(post.body.split(/\s+/).length / 300);
   </article>
 
   <!-- Giscus Comments -->
-  <section class="py-12 bg-cosmos-800 border-t border-cosmos-600">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-star-100 mb-8">评论留言</h2>
+  <section class="comments-section">
+    <div class="comments-content">
+      <h2 class="comments-title">评论留言</h2>
       <script
         src="https://giscus.app/client.js"
         data-repo="luluxiuc/wmsBK"
@@ -177,27 +173,27 @@ const readingTime = Math.ceil(post.body.split(/\s+/).length / 300);
 
   <!-- Related Posts -->
   {relatedPosts.length > 0 && (
-    <section class="py-16 bg-cosmos-900">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold text-star-100 mb-8">相关文章</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <section class="related-section">
+      <div class="related-content">
+        <h2 class="related-title">相关文章</h2>
+        <div class="related-grid">
           {relatedPosts.map((relatedPost) => (
             <a 
               href={`/blog/${relatedPost.slug}/`}
-              class="group bg-cosmos-700 rounded-2xl p-6 border border-cosmos-600 hover:border-sky-400 transition-all duration-300"
+              class="related-card"
             >
-              <div class="flex items-center gap-2 mb-3">
-                <span class="text-2xl">
+              <div class="related-meta">
+                <span class="related-emoji">
                   {relatedPost.data.category === '技术' && '💻'}
                   {relatedPost.data.category === '随笔' && '✍️'}
                   {relatedPost.data.category === '思考' && '🤔'}
                   {!['技术', '随笔', '思考'].includes(relatedPost.data.category) && '📝'}
                 </span>
-                <span class="text-xs text-star-300">
+                <span class="related-date">
                   {relatedPost.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </span>
               </div>
-              <h3 class="font-bold text-star-100 group-hover:text-sky-400 transition-colors line-clamp-2">
+              <h3 class="related-post-title">
                 {relatedPost.data.title}
               </h3>
             </a>
@@ -208,11 +204,357 @@ const readingTime = Math.ceil(post.body.split(/\s+/).length / 300);
   )}
 </BaseLayout>
 
+<style>
+  /* Article Header */
+  .article-header {
+    padding: 120px 24px 60px;
+    position: relative;
+  }
+
+  .article-header-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748B;
+    font-size: 14px;
+    text-decoration: none;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: #60A5FA;
+  }
+
+  .category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(96, 165, 250, 0.15);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 20px;
+    color: #60A5FA;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: #60A5FA;
+    border-radius: 50%;
+  }
+
+  .article-title {
+    font-size: clamp(32px, 6vw, 48px);
+    font-weight: 800;
+    color: #F8FAFC;
+    margin: 0 0 16px;
+    line-height: 1.2;
+  }
+
+  .article-description {
+    font-size: 18px;
+    color: #94A3B8;
+    margin: 0 0 24px;
+    line-height: 1.6;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #64748B;
+  }
+
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .article-tag {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    color: #64748B;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .article-tag:hover {
+    background: rgba(96, 165, 250, 0.15);
+    border-color: rgba(96, 165, 250, 0.3);
+    color: #60A5FA;
+  }
+
+  /* Article Content */
+  .article-content {
+    padding: 0 24px 60px;
+  }
+
+  .article-body {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 40px;
+  }
+
+  @media (max-width: 640px) {
+    .article-body {
+      padding: 24px;
+    }
+  }
+
+  /* Prose Styles */
+  .prose {
+    color: #CBD5E1;
+  }
+
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    color: #F8FAFC;
+    font-weight: 700;
+    margin-top: 2em;
+    margin-bottom: 0.8em;
+  }
+
+  .prose p {
+    margin-bottom: 1.2em;
+    line-height: 1.8;
+  }
+
+  .prose a {
+    color: #60A5FA;
+    text-decoration: none;
+  }
+
+  .prose a:hover {
+    text-decoration: underline;
+  }
+
+  .prose code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #60A5FA;
+  }
+
+  .prose pre {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    overflow-x: auto;
+  }
+
+  .prose pre code {
+    background: none;
+    padding: 0;
+    color: #CBD5E1;
+  }
+
+  .prose blockquote {
+    border-left: 3px solid #60A5FA;
+    padding-left: 20px;
+    margin: 1.5em 0;
+    color: #94A3B8;
+    font-style: italic;
+  }
+
+  .prose ul, .prose ol {
+    margin-bottom: 1.2em;
+    padding-left: 1.5em;
+  }
+
+  .prose li {
+    margin-bottom: 0.5em;
+  }
+
+  /* Article Footer */
+  .article-footer {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .share-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .share-label {
+    font-size: 14px;
+    color: #64748B;
+  }
+
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #CBD5E1;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: rgba(96, 165, 250, 0.15);
+    border-color: rgba(96, 165, 250, 0.3);
+    color: #60A5FA;
+  }
+
+  .more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #60A5FA;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: gap 0.2s;
+  }
+
+  .more-link:hover {
+    gap: 12px;
+  }
+
+  /* Comments Section */
+  .comments-section {
+    padding: 60px 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .comments-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .comments-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin: 0 0 24px;
+  }
+
+  /* Related Section */
+  .related-section {
+    padding: 60px 24px;
+  }
+
+  .related-content {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .related-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin: 0 0 24px;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .related-card {
+    display: block;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .related-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(96, 165, 250, 0.3);
+  }
+
+  .related-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .related-emoji {
+    font-size: 20px;
+  }
+
+  .related-date {
+    font-size: 12px;
+    color: #64748B;
+  }
+
+  .related-post-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #F8FAFC;
+    margin: 0;
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+
+  .related-card:hover .related-post-title {
+    color: #60A5FA;
+  }
+</style>
+
 <script>
   // 复制链接功能
   function copyLink() {
     navigator.clipboard.writeText(window.location.href).then(() => {
-      alert('链接已复制到剪贴板');
+      const btn = document.querySelector('.copy-btn');
+      const originalText = btn?.innerHTML;
+      if (btn) {
+        btn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          已复制
+        `;
+        setTimeout(() => {
+          if (btn && originalText) btn.innerHTML = originalText;
+        }, 2000);
+      }
     }).catch(() => {
       alert('复制失败，请手动复制');
     });

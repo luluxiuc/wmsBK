@@ -62,20 +62,43 @@
         </span>
         <span class="nav-label">更多</span>
       </a>
-    </nav>
 
-    <!-- Footer -->
-    <div class="sidebar-footer">
-      <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">
-        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"/>
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
-        <svg class="icon-moon hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-        </svg>
-      </button>
-    </div>
+      <div class="nav-divider"></div>
+
+      <a href="/blog/" class="nav-item nav-link-page" data-section="blog">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </span>
+        <span class="nav-label">博客</span>
+      </a>
+
+      <a href="/projects/" class="nav-item nav-link-page" data-section="projects">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+        </span>
+        <span class="nav-label">作品</span>
+      </a>
+
+      <a href="/resources/" class="nav-item nav-link-page" data-section="resources">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+          </svg>
+        </span>
+        <span class="nav-label">资源</span>
+      </a>
+    </nav>
   </div>
 </aside>
 
@@ -91,9 +114,14 @@
     width: 72px;
     z-index: 1000;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible;
   }
 
   .sidebar.expanded {
+    width: 200px;
+  }
+
+  .sidebar:hover {
     width: 200px;
   }
 
@@ -229,55 +257,33 @@
     font-size: 14px;
     font-weight: 500;
     opacity: 0;
-    transform: translateX(-10px);
-    transition: all 0.3s ease;
+    width: 0;
+    overflow: hidden;
     white-space: nowrap;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* 侧边栏悬停时显示所有标签 */
+  .sidebar:hover .nav-label {
+    opacity: 1;
+    width: auto;
+    margin-left: 0;
+    transform: translateX(0);
+  }
+
+  /* 侧边栏整体展开时 */
   .sidebar.expanded .nav-label {
     opacity: 1;
+    width: auto;
+    margin-left: 0;
     transform: translateX(0);
   }
 
-  /* Footer */
-  .sidebar-footer {
-    margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .theme-toggle {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: #94A3B8;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .theme-toggle:hover {
+  /* Nav Divider */
+  .nav-divider {
+    height: 1px;
     background: rgba(255, 255, 255, 0.1);
-    color: #F8FAFC;
-  }
-
-  .theme-toggle::after {
-    content: '主题';
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: all 0.3s ease;
-  }
-
-  .sidebar.expanded .theme-toggle::after {
-    opacity: 1;
-    transform: translateX(0);
+    margin: 12px 0;
   }
 
   /* Overlay */
@@ -385,19 +391,53 @@
   window.addEventListener('scroll', updateActiveNav);
   updateActiveNav();
 
-  // Smooth scroll
+  // Smooth scroll for anchor links
   navItems.forEach(item => {
     item.addEventListener('click', (e) => {
+      const href = item.getAttribute('href');
+      if (!href) return;
+      
+      // 如果是页面链接（以 / 开头），不阻止默认行为
+      if (href.startsWith('/')) {
+        // Close mobile menu
+        sidebar?.classList.remove('mobile-open');
+        overlay?.classList.remove('active');
+        return;
+      }
+      
+      // 锚点链接处理
       e.preventDefault();
-      const targetId = item.getAttribute('href');
-      const targetSection = document.querySelector(targetId);
-      if (targetSection) {
-        targetSection.scrollIntoView({ behavior: 'smooth' });
+      
+      // 检查当前是否在首页
+      const currentPath = window.location.pathname;
+      const isHomePage = currentPath === '/' || currentPath === '/index.html' || currentPath === '';
+      
+      if (isHomePage) {
+        // 在首页，直接滚动到对应位置
+        const targetId = href;
+        const targetSection = document.querySelector(targetId);
+        if (targetSection) {
+          targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else {
+        // 不在首页，先跳转到首页，再滚动到对应位置
+        window.location.href = '/' + href;
       }
       
       // Close mobile menu
       sidebar?.classList.remove('mobile-open');
       overlay?.classList.remove('active');
     });
+  });
+
+  // 处理页面链接的高亮
+  const currentPath = window.location.pathname;
+  navItems.forEach(item => {
+    const href = item.getAttribute('href');
+    if (href?.startsWith('/') && currentPath.startsWith(href)) {
+      item.classList.add('active');
+    } else if (!href?.startsWith('/')) {
+      // 锚点链接根据滚动位置高亮
+    }
   });
 </script>
